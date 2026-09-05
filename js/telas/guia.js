@@ -11,20 +11,12 @@ Bonsai.telas.guia = (function () {
   function render(params) {
     if (params && params.secao) {
       return '' +
-        '<h1>Guia: ' + escapar(params.secao) + '</h1>' +
+        '<h1>Guia: ' + Bonsai.util.escapar(params.secao) + '</h1>' +
         '<p>Esta seção ainda não foi construída (Task 14).</p>';
     }
     return '' +
       '<h1>Guia</h1>' +
       '<p>Esta tela ainda não foi construída (Task 14).</p>';
-  }
-
-  function escapar(texto) {
-    return String(texto)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
   }
 
   return { render: render };

@@ -6,7 +6,7 @@ const raiz = path.join(__dirname, '..');
 
 // Ordem de carga: igual à do index.html.
 const FONTES = [
-  'js/datas.js', 'js/db.js', 'js/dados-iniciais.js', 'js/regras.js',
+  'js/util.js', 'js/datas.js', 'js/db.js', 'js/dados-iniciais.js', 'js/regras.js',
   'js/rega.js', 'js/alertas.js', 'js/grafico.js', 'js/svg.js'
 ];
 

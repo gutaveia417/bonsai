@@ -20,23 +20,10 @@ var Bonsai = (typeof window !== 'undefined'
 // ---------------------------------------------------------------------
 Bonsai.svg = (function () {
 
-  // Mesmo escape de js/grafico.js — nenhum texto entra na marcação sem
-  // passar por aqui, mesmo quando (como aqui) o texto é sempre um literal
-  // do próprio módulo, nunca dado do usuário.
-  function escapar(valor) {
-    if (valor === null || valor === undefined) return '';
-    return String(valor)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#39;');
-  }
-
   function abrirSvg(viewBox, titulo) {
     return '<svg viewBox="' + viewBox + '" xmlns="http://www.w3.org/2000/svg" ' +
-      'role="img" aria-label="' + escapar(titulo) + '">' +
-      '<title>' + escapar(titulo) + '</title>';
+      'role="img" aria-label="' + Bonsai.util.escapar(titulo) + '">' +
+      '<title>' + Bonsai.util.escapar(titulo) + '</title>';
   }
 
   function texto(x, y, conteudo, opts) {
@@ -48,7 +35,7 @@ Bonsai.svg = (function () {
     if (opts.italico) extra += ' font-style="italic"';
     return '<text x="' + x + '" y="' + y + '" font-size="' + tamanho +
       '" text-anchor="' + ancora + '" fill="#000"' + extra + '>' +
-      escapar(conteudo) + '</text>';
+      Bonsai.util.escapar(conteudo) + '</text>';
   }
 
   function linha(x1, y1, x2, y2, opts) {

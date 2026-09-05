@@ -70,21 +70,13 @@ Bonsai.app = (function () {
 
   // ---- Parte que toca DOM — não roda no executor de testes em Node ----
 
-  function escapar(texto) {
-    return String(texto)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
-  }
-
   function faixaSomenteLeitura() {
     if (!estado.somenteLeitura) return '';
     var motivo = (estado.db && estado.db.motivo) ||
       'Os dados estão em modo somente leitura.';
     return '' +
       '<div id="faixa-somente-leitura" role="alert">' +
-        '<p>' + escapar(motivo) + '</p>' +
+        '<p>' + Bonsai.util.escapar(motivo) + '</p>' +
         '<button type="button" id="btn-exportar-agora">Exportar agora</button>' +
       '</div>';
   }
@@ -143,7 +135,7 @@ Bonsai.app = (function () {
     } else {
       // Não deveria acontecer com as 4 telas registradas, mas não trava a
       // tela toda por causa de uma tela ausente.
-      html += '<h1>Tela não encontrada</h1><p>A tela "' + escapar(nomeTela) +
+      html += '<h1>Tela não encontrada</h1><p>A tela "' + Bonsai.util.escapar(nomeTela) +
         '" ainda não foi registrada.</p>';
     }
 

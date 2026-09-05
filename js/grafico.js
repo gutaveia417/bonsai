@@ -24,16 +24,6 @@ Bonsai.grafico = (function () {
   var Y0 = 14;               // topo da área (maior valor do eixo)
   var Y1 = ALTURA - 28;      // base da área (zero do eixo)
 
-  function escapar(valor) {
-    if (valor === null || valor === undefined) return '';
-    return String(valor)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#39;');
-  }
-
   function arredondar(n) {
     return Math.round(n * 10) / 10;
   }
@@ -63,8 +53,8 @@ Bonsai.grafico = (function () {
 
     if (gatilho && typeof gatilho.alvoMm === 'number') {
       partes.push('<p class="grafico-tronco__alvo">Alvo para o decepe: ' +
-        escapar(gatilho.alvoMm) + ' mm de diâmetro.</p>');
-      partes.push('<p class="grafico-tronco__metodo">Método: ' + escapar(gatilho.metodo) + '</p>');
+        Bonsai.util.escapar(gatilho.alvoMm) + ' mm de diâmetro.</p>');
+      partes.push('<p class="grafico-tronco__metodo">Método: ' + Bonsai.util.escapar(gatilho.metodo) + '</p>');
     } else {
       partes.push('<p class="grafico-tronco__alvo">Nenhum alvo de diâmetro definido para esta árvore ainda.</p>');
     }
@@ -142,7 +132,7 @@ Bonsai.grafico = (function () {
       partes.push('<line x1="' + X0 + '" y1="' + yAlvo + '" x2="' + X1 + '" y2="' + yAlvo +
         '" stroke="#333" stroke-width="1.5" stroke-dasharray="4 3" />');
       partes.push('<text x="' + X1 + '" y="' + arredondar(yAlvo - 4) +
-        '" font-size="9" text-anchor="end" fill="#333">alvo ' + escapar(alvoMm) + ' mm</text>');
+        '" font-size="9" text-anchor="end" fill="#333">alvo ' + Bonsai.util.escapar(alvoMm) + ' mm</text>');
     }
 
     // Liga os pontos só a partir de duas medições — uma linha com um único
@@ -164,11 +154,11 @@ Bonsai.grafico = (function () {
     var ultimo = pontos[pontos.length - 1];
     partes.push('<text x="' + arredondar(primeiro.x) + '" y="' + (ALTURA - 8) +
       '" font-size="8" text-anchor="middle" fill="#333">' +
-      escapar(Bonsai.datas.formatarBR(primeiro.data)) + '</text>');
+      Bonsai.util.escapar(Bonsai.datas.formatarBR(primeiro.data)) + '</text>');
     if (pontos.length >= 2) {
       partes.push('<text x="' + arredondar(ultimo.x) + '" y="' + (ALTURA - 8) +
         '" font-size="8" text-anchor="middle" fill="#333">' +
-        escapar(Bonsai.datas.formatarBR(ultimo.data)) + '</text>');
+        Bonsai.util.escapar(Bonsai.datas.formatarBR(ultimo.data)) + '</text>');
     }
 
     partes.push('</svg>');
