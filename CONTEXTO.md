@@ -136,6 +136,30 @@ deve voltar vazio.
   uma mão só e a outra suja.
 - **Zero rede em runtime.** Nenhum hotlink, nenhuma fonte externa, nenhuma API.
 
+## Nunca toque na máquina fora deste repositório
+
+Esta é a máquina pessoal de alguém, com trabalho aberto nela. Já aconteceu uma
+vez: um agente rodou `taskkill /F /IM chrome.exe /T` para limpar um Chrome de
+depuração e **fechou à força todas as janelas do navegador do dono**, com as
+abas dele dentro.
+
+Nunca:
+
+- mate processos por nome de imagem (`taskkill /IM`, `pkill -f chrome`) — você
+  não sabe o que mais responde por aquele nome;
+- encerre navegador, editor ou terminal que você não abriu;
+- mexa em nada fora de `C:\Users\Admin\Desktop\Estudos-bonsai`;
+- desinstale, atualize ou reconfigure software da máquina.
+
+Se um processo que você iniciou precisa morrer, mate **pelo PID que você
+guardou ao criá-lo**. Se não guardou o PID, deixe rodando e diga no relatório —
+um processo órfão custa memória, uma janela fechada custa o trabalho de alguém.
+
+Ferramenta de navegador que recusa `file://` por política é uma decisão de
+segurança, não um obstáculo a contornar. Se precisar testar `file://`, diga no
+relatório que não conseguiu e por quê, em vez de dirigir um navegador por
+protocolo de depuração para driblar a recusa.
+
 ## Antes de terminar sua tarefa
 
 1. `node testes/run.js` — precisa passar inteiro, não só os seus testes.
