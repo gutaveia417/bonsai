@@ -189,4 +189,25 @@ assert.grupo('rega — invariantes', function () {
       assert.eq(l.arvore.status, 'ativa', l.arvore.id + ': só árvores ativas entram no checklist');
     });
   })();
+
+  // 9. Nenhum texto de rega ancora na superfície (spec 4.6 pós fix round
+  // 2: o teste do dedo é a 2–3 cm nos cinco perfis, sem exceção, e o que
+  // muda de um perfil para o outro é o que aquele resultado significa,
+  // nunca onde o dedo entra). Uma `instrucao` pode citar "superfície"
+  // desde que a mesma frase negue explicitamente julgar só por cima —
+  // sem essa negação, é exatamente o falso positivo que faz o app
+  // ensinar na tela de rega o erro que o guia lista como erro clássico.
+  (function () {
+    IDS_PERFIS.forEach(function (id) {
+      var perfil = Bonsai.rega.PERFIS[id];
+      var mencionaSuperficie = /superf[íi]cie/i.test(perfil.instrucao);
+      if (mencionaSuperficie) {
+        var negaJulgamentoPorCima = /sem confiar|n[ãa]o confi|n[ãa]o (s[oó]|apenas)\b/i.test(perfil.instrucao);
+        assert.ok(negaJulgamentoPorCima,
+          id + ': instrucao cita superfície mas nega o julgamento por cima (recebi: "' + perfil.instrucao + '")');
+      } else {
+        assert.ok(true, id + ': instrucao não ancora na superfície');
+      }
+    });
+  })();
 });

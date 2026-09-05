@@ -21,7 +21,7 @@ Bonsai.rega = (function () {
     },
     'secar-entre-regas': {
       rotulo: 'Secar entre regas',
-      instrucao: 'Deixar a superfície secar antes de molhar de novo — essa espécie sofre mais de excesso do que de falta.',
+      instrucao: 'Deixar secar entre uma rega e outra, sem confiar na superfície — essa espécie sofre mais de excesso do que de falta.',
       teste: 'Enfie o dedo 2–3 cm no substrato: seco nesse ponto é o sinal certo, não quantos dias se passaram desde a última vez.'
     },
     'secar-completo': {
