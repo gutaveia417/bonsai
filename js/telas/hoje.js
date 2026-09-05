@@ -76,7 +76,18 @@ Bonsai.telas.hoje = (function () {
   // no DOM (isso é papel de `ligar`).
   // ---------------------------------------------------------------------
 
-  function renderAlerta(alerta) {
+  // Apelido da árvore a que o alerta se refere, ou `null` quando o alerta
+  // não tem `arvoreId` (nenhum gerador de js/alertas.js produz isso hoje,
+  // mas a tela não pode quebrar nem escrever "null" se algum vier a
+  // produzir). Não é papel de js/alertas.js carregar apelido — ele só
+  // conhece ids; resolver o nome é responsabilidade de quem renderiza.
+  function apelidoArvore(arvoreId, db) {
+    if (!arvoreId) return null;
+    var arvore = db.arvores.filter(function (a) { return a.id === arvoreId; })[0];
+    return arvore ? arvore.apelido : null;
+  }
+
+  function renderAlerta(alerta, db) {
     var progressoHtml = '';
     // `progresso` só existe quando há medição real (js/alertas.js). Sem
     // medição é `null` — sem barra, sem número (CONTEXTO invariante 1).
@@ -91,10 +102,23 @@ Bonsai.telas.hoje = (function () {
           ' mm de ' + Bonsai.util.escapar(alerta.progresso.alvoMm) + ' mm</p>';
     }
 
+    var apelido = apelidoArvore(alerta.arvoreId, db);
+    // Sem o apelido aqui, três cartões de bloqueio de adubo têm o mesmo
+    // título ("Adubo bloqueado agora") e o dono só sabe de qual árvore é
+    // lendo o estado citado no corpo — exatamente o trabalho que o app
+    // existe para poupar. Vive no cabeçalho, ao lado do rótulo de nível,
+    // para ler antes até do título.
+    var cabecalhoArvore = apelido
+      ? '<p class="alerta-arvore">' + Bonsai.util.escapar(apelido) + '</p>'
+      : '';
+
     return '' +
       '<article class="alerta alerta-' + Bonsai.util.escapar(alerta.nivel) + '" data-alerta-id="' +
         Bonsai.util.escapar(alerta.id) + '">' +
-        '<p class="alerta-nivel-rotulo">' + (ROTULO_NIVEL[alerta.nivel] || '') + '</p>' +
+        '<div class="alerta-cabecalho">' +
+          '<p class="alerta-nivel-rotulo">' + (ROTULO_NIVEL[alerta.nivel] || '') + '</p>' +
+          cabecalhoArvore +
+        '</div>' +
         '<h3>' + Bonsai.util.escapar(alerta.titulo) + '</h3>' +
         '<p>' + Bonsai.util.escapar(alerta.corpo) + '</p>' +
         progressoHtml +
@@ -106,9 +130,9 @@ Bonsai.telas.hoje = (function () {
       '</article>';
   }
 
-  function renderSecaoAlertas(alertas) {
+  function renderSecaoAlertas(alertas, db) {
     var corpo = alertas.length
-      ? alertas.map(renderAlerta).join('')
+      ? alertas.map(function (a) { return renderAlerta(a, db); }).join('')
       : '<p class="vazio">Nenhum alerta agora.</p>';
     return '' +
       '<section aria-labelledby="titulo-alertas">' +
@@ -209,7 +233,7 @@ Bonsai.telas.hoje = (function () {
 
     return '' +
       '<h1>Hoje</h1>' +
-      renderSecaoAlertas(alertas) +
+      renderSecaoAlertas(alertas, db) +
       renderSecaoTarefas(tarefas, db) +
       renderSecaoChecklist(grupos) +
       '<section class="secao-registrar">' +

@@ -16,7 +16,8 @@ Bonsai.app = (function () {
     arvores: 'arvores',
     arvore: 'arvores',
     guia: 'guia',
-    mais: 'mais'
+    mais: 'mais',
+    evento: 'evento'
   };
 
   var estado = { db: null, somenteLeitura: false, hoje: null };
@@ -53,6 +54,17 @@ Bonsai.app = (function () {
     }
     if (nome === 'mais' && partes.length === 1) {
       return { rota: 'mais', params: {} };
+    }
+    // Rota da Task 11 (formulário de evento), registrada aqui só para o
+    // botão "Registrar evento" e o "concluir" de tarefa com evento
+    // associado (Tela Hoje, Task 9) apontarem para um destino real em vez
+    // de cair em silêncio na tela padrão. `js/telas/evento.js` ainda é
+    // esqueleto — o formulário de verdade é a Task 11.
+    if (nome === 'evento' && partes.length === 1) {
+      return { rota: 'evento', params: {} };
+    }
+    if (nome === 'evento' && partes.length === 3 && partes[1] && partes[2]) {
+      return { rota: 'evento', params: { arvoreId: partes[1], tipo: partes[2] } };
     }
 
     return { rota: ROTA_PADRAO, params: {} };

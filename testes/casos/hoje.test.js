@@ -185,6 +185,79 @@ assert.grupo('hoje.render — invariantes contra o seed limpo (2026-09-05)', fun
   assert.eq(/\bnull\b/.test(html), false, 'a palavra "null" nunca aparece na tela renderizada');
 });
 
+// ---------------------------------------------------------------------
+// Fix round 1 — item 1: três alertas de bloqueio de adubo têm o título
+// idêntico ("Adubo bloqueado agora"); sem o apelido da árvore no cartão, o
+// dono só sabe de qual árvore é lendo o estado citado no corpo. Testa a
+// classe (todo alerta com arvoreId, em várias datas do ano), não um único
+// exemplo — extrai o fragmento de CADA cartão pelo `data-alerta-id` e exige
+// que o apelido apareça DENTRO daquele cartão específico, não só em algum
+// lugar da página.
+// ---------------------------------------------------------------------
+function cardAlerta(html, id) {
+  var marcador = html.indexOf('data-alerta-id="' + id + '"');
+  if (marcador === -1) return null;
+  var abreArticle = html.lastIndexOf('<article', marcador);
+  var fechaArticle = html.indexOf('</article>', marcador);
+  if (abreArticle === -1 || fechaArticle === -1) return null;
+  return html.slice(abreArticle, fechaArticle);
+}
+
+assert.grupo('hoje.render — cada cartão de alerta nomeia a árvore (fix round 1)', function () {
+  var DATAS = ['2026-01-15', '2026-06-15', '2026-09-05', '2026-10-05', '2026-12-15', '2027-01-15'];
+  var totalAlertasComArvoreVerificados = 0;
+
+  DATAS.forEach(function (hoje) {
+    var db = Bonsai.dadosIniciais.montar();
+    Bonsai.app.estado.db = db;
+    Bonsai.app.estado.hoje = hoje;
+    var html = Bonsai.telas.hoje.render({});
+    var ativos = Bonsai.alertas.ativos(db, hoje);
+
+    ativos.forEach(function (alerta) {
+      if (!alerta.arvoreId) return;
+      var arvore = db.arvores.filter(function (a) { return a.id === alerta.arvoreId; })[0];
+      assert.ok(arvore, hoje + ': alerta ' + alerta.id + ' referencia uma árvore que existe no seed');
+      if (!arvore) return;
+
+      var card = cardAlerta(html, alerta.id);
+      assert.ok(card, hoje + ': o cartão do alerta ' + alerta.id + ' aparece na tela');
+      if (!card) return;
+
+      assert.ok(card.indexOf(Bonsai.util.escapar(arvore.apelido)) >= 0,
+        hoje + ': o cartão do alerta ' + alerta.id + ' mostra o apelido "' + arvore.apelido + '"');
+      totalAlertasComArvoreVerificados++;
+    });
+  });
+
+  assert.ok(totalAlertasComArvoreVerificados > 0,
+    'pré-condição: pelo menos um alerta com arvoreId foi de fato verificado nas datas testadas');
+});
+
+assert.grupo('hoje.render — três bloqueios de adubo com título idêntico ficam distinguíveis (seed limpo)', function () {
+  Bonsai.app.estado.db = Bonsai.dadosIniciais.montar();
+  Bonsai.app.estado.hoje = '2026-09-05';
+  var html = Bonsai.telas.hoje.render({});
+
+  var jabuticaba = cardAlerta(html, 'bloqueio-adubo-jabuticaba');
+  var serissa = cardAlerta(html, 'bloqueio-adubo-serissa');
+  var azaleia = cardAlerta(html, 'bloqueio-adubo-azaleia');
+
+  assert.ok(jabuticaba && serissa && azaleia, 'pré-condição: os três cartões de bloqueio de adubo existem hoje');
+  assert.ok(jabuticaba.indexOf('Jabuticaba') >= 0, 'o cartão da Jabuticaba diz "Jabuticaba"');
+  assert.ok(serissa.indexOf('Serissa') >= 0, 'o cartão da Serissa diz "Serissa"');
+  assert.ok(azaleia.indexOf('Azaleia') >= 0, 'o cartão da Azaleia diz "Azaleia"');
+
+  // E cada um NÃO contém o nome dos outros dois — descarta o caso em que o
+  // apelido aparece na página inteira mas não no cartão certo.
+  assert.eq(jabuticaba.indexOf('Serissa') >= 0 || jabuticaba.indexOf('Azaleia') >= 0, false,
+    'o cartão da Jabuticaba não menciona as outras duas árvores');
+  assert.eq(serissa.indexOf('Jabuticaba') >= 0 || serissa.indexOf('Azaleia') >= 0, false,
+    'o cartão da Serissa não menciona as outras duas árvores');
+  assert.eq(azaleia.indexOf('Jabuticaba') >= 0 || azaleia.indexOf('Serissa') >= 0, false,
+    'o cartão da Azaleia não menciona as outras duas árvores');
+});
+
 assert.grupo('hoje.render — datas variadas não introduzem percentual nem "regue"', function () {
   var DATAS = ['2026-01-15', '2026-06-15', '2026-09-05', '2026-10-05', '2026-12-15', '2027-01-15'];
   DATAS.forEach(function (hoje) {

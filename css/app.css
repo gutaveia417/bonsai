@@ -96,11 +96,28 @@ body { margin: 0; font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, s
   margin: 4px 0;
 }
 
+.alerta-cabecalho {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+}
+
 .alerta-nivel-rotulo {
   font-weight: 700;
   text-transform: uppercase;
   font-size: 12px;
   letter-spacing: 0.03em;
+  margin: 0;
+}
+
+/* Nome da árvore a que o alerta se refere — sem isto, cartões do mesmo tipo
+   (ex.: três bloqueios de adubo) são indistinguíveis sem ler o corpo inteiro
+   e deduzir o estado de cada planta. Ver fix round 1 da Task 9. */
+.alerta-arvore {
+  font-weight: 700;
+  margin: 0;
 }
 
 .alerta-bloqueio {

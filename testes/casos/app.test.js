@@ -56,3 +56,19 @@ assert.grupo('app.abaParaRota — aba ativa na navegação', function () {
   assert.eq(Bonsai.app.abaParaRota('guia'), 'guia', 'guia → aba guia');
   assert.eq(Bonsai.app.abaParaRota('mais'), 'mais', 'mais → aba mais');
 });
+
+// Task 9, fix round 1: rota do formulário de evento (Task 11), registrada
+// aqui só para o botão "Registrar evento" da Tela Hoje apontar para um
+// destino real (js/telas/evento.js, esqueleto) em vez de cair em silêncio
+// na tela padrão. Acréscimo puro — nenhuma asserção acima foi alterada.
+assert.grupo('app.analisarRota — evento (Task 9 fix round 1, preparando a Task 11)', function () {
+  assert.eq(Bonsai.app.analisarRota('#/evento'), { rota: 'evento', params: {} },
+    '#/evento sem árvore/tipo vira { rota: evento, params: {} }');
+  assert.eq(Bonsai.app.analisarRota('#/evento/jabuticaba/medicao'),
+    { rota: 'evento', params: { arvoreId: 'jabuticaba', tipo: 'medicao' } },
+    '#/evento/:arvoreId/:tipo extrai os dois parâmetros');
+  assert.eq(Bonsai.app.analisarRota('#/evento/jabuticaba'), { rota: 'hoje', params: {} },
+    '#/evento com só um segmento (sem tipo) normaliza para hoje, não quebra');
+  assert.eq(Bonsai.app.telaParaRota('evento'), 'evento', 'evento → tela evento');
+  assert.eq(Bonsai.app.abaParaRota('evento'), 'evento', 'evento não corresponde a nenhuma aba existente, mas não lança');
+});
