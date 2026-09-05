@@ -135,15 +135,46 @@ assert.grupo('svg - nenhum diagrama lança exceção nem usa aleatoriedade perce
 // os sete diagramas de verdade num navegador.
 //
 // A técnica: estimar a caixa ocupada por cada <text>/<tspan> a partir do
-// número de caracteres, do font-size e do text-anchor (sem precisar de DOM
-// nem de medir glifo de verdade — 0,6 é uma média grosseira de largura de
-// caractere, boa o bastante para pegar estouro de borda e sobreposição
-// grosseira, não para layout pixel-perfeito). Depois:
+// font-size e do text-anchor (sem precisar de DOM nem de medir glifo de
+// verdade). Depois:
 //   1. nenhuma caixa pode passar da borda do viewBox (com folga de margem);
 //   2. dentro do mesmo diagrama, nenhuma caixa pode cruzar outra.
+//
+// Fix round 3: a versão original usava uma média única de 0,6 × font-size
+// por caractere — boa para texto minúsculo comum, mas otimista para
+// maiúsculas (um "M" ocupa perto de 0,9 do tamanho da fonte, não 0,6) e
+// para os rótulos deste projeto especificamente, que têm cabeçalhos em
+// Caixa Alta Inicial e acentuação portuguesa pesada ("Conicidade ×
+// cilíndrico", "ângulo íngreme"). Uma média única subestima exatamente os
+// rótulos mais largos — os que estouram. Agora a largura é somada
+// caractere a caractere, classificando por categoria Unicode (não por
+// `.toUpperCase() === char`, que classificaria símbolos sem caixa — como
+// "×", "—", "°" — como maiúsculos, porque nesses casos toUpperCase() é
+// idempotente):
+//   - \p{Lu} (maiúscula, inclusive acentuada: À Â Ã É Í Ó Ô Õ Ú Ç)  → 0,72
+//   - \p{Ll} (minúscula, inclusive acentuada)                        → 0,60
+//   - \p{Nd} (dígito)                                                → 0,50
+//   - espaço em branco                                               → 0,28
+//   - qualquer outro símbolo/pontuação (×, —, °, parênteses, etc.)    → 0,50
+// Não é medição real de glifo — é conservadora onde a média antiga era
+// otimista, que é a direção que importa para não deixar passar corte de
+// texto.
 // ===========================================================================
-var FATOR_LARGURA_GLIFO = 0.6; // média grosseira: largura de um caractere ≈ 0,6 × font-size
 var MARGEM_VIEWBOX = 3;
+
+function larguraCaractere(ch, tamanho) {
+  if (/\s/.test(ch)) return tamanho * 0.28;
+  if (/\p{Lu}/u.test(ch)) return tamanho * 0.72;
+  if (/\p{Ll}/u.test(ch)) return tamanho * 0.60;
+  if (/\p{Nd}/u.test(ch)) return tamanho * 0.50;
+  return tamanho * 0.50;
+}
+
+function larguraTexto(texto, tamanho) {
+  var total = 0;
+  for (var i = 0; i < texto.length; i++) total += larguraCaractere(texto[i], tamanho);
+  return total;
+}
 
 function analisarViewBox(svg) {
   var m = svg.match(/viewBox\s*=\s*"([^"]+)"/);
@@ -167,7 +198,7 @@ function textoVisivel(html) {
 }
 
 function caixaDe(x, y, texto, tamanho, anchor) {
-  var largura = texto.length * tamanho * FATOR_LARGURA_GLIFO;
+  var largura = larguraTexto(texto, tamanho);
   var x0, x1;
   if (anchor === 'middle') { x0 = x - largura / 2; x1 = x + largura / 2; }
   else if (anchor === 'end') { x0 = x - largura; x1 = x; }
@@ -222,6 +253,44 @@ function caixasDeTexto(svg) {
 function seSobrepoe(a, b) {
   return a.x0 < b.x1 && a.x1 > b.x0 && a.y0 < b.y1 && a.y1 > b.y0;
 }
+
+// ---------------------------------------------------------------------
+// Fix round 3 — confirma que a classificação por categoria Unicode trata
+// maiúsculas acentuadas como maiúsculas (não como "sem classificação" nem
+// como símbolo), e que símbolos sem caixa (que um `.toUpperCase() ===
+// caractere` ingênuo classificaria como maiúsculos, por serem idempotentes
+// sob toUpperCase) caem na categoria neutra em vez de inflar a largura.
+// ---------------------------------------------------------------------
+function quaseIgual(a, b) {
+  return Math.abs(a - b) < 1e-9;
+}
+
+assert.grupo('svg - R24: classificação de largura por caractere', function () {
+  var maiusculasAcentuadas = ['À', 'Â', 'Ã', 'É', 'Í', 'Ó', 'Ô', 'Õ', 'Ú', 'Ç'];
+  maiusculasAcentuadas.forEach(function (c) {
+    assert.ok(quaseIgual(larguraCaractere(c, 10), 7.2), 'maiúscula acentuada "' + c + '" pesa 0,72 × tamanho');
+  });
+
+  var minusculasAcentuadas = ['à', 'â', 'ã', 'é', 'í', 'ó', 'ô', 'õ', 'ú', 'ç'];
+  minusculasAcentuadas.forEach(function (c) {
+    assert.ok(quaseIgual(larguraCaractere(c, 10), 6.0), 'minúscula acentuada "' + c + '" pesa 0,60 × tamanho');
+  });
+
+  // Símbolos sem distinção de caixa: toUpperCase() é idempotente neles, um
+  // classificador ingênuo (`c.toUpperCase() === c`) os confundiria com
+  // maiúsculas. \p{Lu} corretamente não os reconhece como letra maiúscula.
+  ['×', '—', '°', '(', ')', ':', ',', '→'].forEach(function (c) {
+    assert.ok(quaseIgual(larguraCaractere(c, 10), 5.0), 'símbolo "' + c + '" não é tratado como maiúscula (pesa 0,50 × tamanho)');
+  });
+
+  assert.ok(quaseIgual(larguraCaractere('9', 10), 5.0), 'dígito pesa 0,50 × tamanho');
+  assert.ok(quaseIgual(larguraCaractere(' ', 10), 2.8), 'espaço pesa 0,28 × tamanho');
+
+  // Um rótulo em Caixa Alta Inicial mistura categorias — a soma por
+  // caractere precisa bater com a soma manual, não com length × constante.
+  var esperado = 10 * 0.72 + 10 * 0.60 * 3 + 10 * 0.28; // 'P' + 'ivo' + espaço
+  assert.ok(quaseIgual(larguraTexto('Pivo ', 10), esperado), 'largura de string mista é a soma por caractere');
+});
 
 assert.grupo('svg - R24: nenhum rótulo estoura o viewBox', function () {
   Bonsai.svg.LISTA.forEach(function (d) {
