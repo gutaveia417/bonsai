@@ -468,8 +468,8 @@ Bonsai.svg = (function () {
     p.push(poligono('320,210 380,210 380,60 320,60', { fill: '#fff', cor: '#000', largura: 2 }));
     p.push(linha(390, 210, 390, 60, { largura: 0.8, cor: '#999', tracejado: '2 2' }));
     p.push(texto(350, 234, 'cilíndrico', { ancora: 'middle', tamanho: 13, negrito: true }));
-    p.push(texto(350, 248, '(sem conicidade:', { ancora: 'middle', tamanho: 8 }));
-    p.push(texto(350, 260, 'mesma grossura sempre)', { ancora: 'middle', tamanho: 8 }));
+    p.push(texto(350, 248, '(sem conicidade —', { ancora: 'middle', tamanho: 8 }));
+    p.push(texto(350, 260, 'mesma grossura do chão à copa)', { ancora: 'middle', tamanho: 8 }));
     p.push(apontar(430, 200, 382, 205));
     p.push(texto(446, 200, 'largo', { ancora: 'end', tamanho: 9 }));
     p.push(apontar(430, 70, 382, 64));
