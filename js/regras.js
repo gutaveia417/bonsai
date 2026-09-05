@@ -12,6 +12,11 @@ Bonsai.regras = (function () {
     // "podar-raiz" (permitido, ato deliberado na janela de transplante) e
     // "podar" (atenção, observação passiva sobre ramo baixo engrossando) são
     // atos físicos diferentes — nunca a mesma acao em listas diferentes.
+    //
+    // `regar` e `medir` (cuidado básico, spec 5.1 "Cuidado básico") NÃO
+    // aparecem aqui: elas vêm da lista NUCLEO, aplicada por fora de fase e
+    // estado, para não depender de herança — uma árvore com `fase: null`
+    // não tem de quem herdar.
     engorda: {
       permitido: [
         {
@@ -21,22 +26,10 @@ Bonsai.regras = (function () {
           guiaAncora: 'guia#engorda-adubar'
         },
         {
-          acao: 'regar',
-          texto: 'Regar de forma farta, sem deixar secar por completo.',
-          porque: 'Em crescimento ativo a planta consome bem mais água; regar pouco agora trava justamente o engrossamento que é o objetivo desta fase.',
-          guiaAncora: 'guia#engorda-regar'
-        },
-        {
           acao: 'transplantar',
           texto: 'Usar vaso ou bacia do maior tamanho disponível — nunca um vaso de bonsai definitivo.',
           porque: 'Raiz com mais espaço sustenta uma copa maior, e é a copa grande que fabrica a grossura de tronco desta fase.',
           guiaAncora: 'guia#engorda-vaso'
-        },
-        {
-          acao: 'medir',
-          texto: 'Medir o tronco de tempos em tempos para acompanhar o engrossamento até o alvo de diâmetro.',
-          porque: 'Sem uma medida real, feita com fita métrica, não dá para saber quando o tronco está pronto para o corte de decepe.',
-          guiaAncora: 'guia#engorda-medir'
         },
         {
           acao: 'podar-raiz',
@@ -172,21 +165,9 @@ Bonsai.regras = (function () {
   // o da fase é removido de todas as listas.
   // ---------------------------------------------------------------------
   var POR_ESTADO = {
+    // `regar` e `observar` não aparecem em `permitido` aqui: são cuidado
+    // básico (NUCLEO), garantido por fora desta tabela.
     adaptacao: {
-      permitido: [
-        {
-          acao: 'regar',
-          texto: 'Regar pelo perfil de rega da espécie, normalmente.',
-          porque: 'Uma planta em adaptação continua precisando de água como sempre; suspender a rega não ajuda a fixação, só reduz o pouco fôlego que ela já tem para se ajustar.',
-          guiaAncora: 'guia#adaptacao-regar'
-        },
-        {
-          acao: 'observar',
-          texto: 'Observar como a planta reage ao ambiente novo, sem mexer.',
-          porque: 'Boa parte da adaptação é acompanhar sinais — folha nova, folha caindo, cor — em vez de agir; intervir demais nesta fase atrapalha mais do que ajuda.',
-          guiaAncora: 'guia#adaptacao-observar'
-        }
-      ],
       proibido: [
         {
           acao: 'adubar',
@@ -221,6 +202,7 @@ Bonsai.regras = (function () {
       ]
     },
 
+    // `regar` não aparece em `permitido` aqui: é cuidado básico (NUCLEO).
     recuperacao: {
       permitido: [
         {
@@ -228,12 +210,6 @@ Bonsai.regras = (function () {
           texto: 'Manter no lugar atual, à sombra, sem mudar de lugar.',
           porque: 'Trocar de posição agora soma mais uma variável de estresse a uma planta que já está tentando se recuperar de um dano sério.',
           guiaAncora: 'guia#recuperacao-manter-sombra'
-        },
-        {
-          acao: 'regar',
-          texto: 'Manter água regular, testando o substrato antes de cada rega.',
-          porque: 'Regularidade sem excesso mantém a raiz viva sem repetir uma possível causa do dano, enquanto ela ainda não foi confirmada.',
-          guiaAncora: 'guia#recuperacao-regar'
         },
         {
           acao: 'esperar',
@@ -276,15 +252,8 @@ Bonsai.regras = (function () {
       ]
     },
 
+    // `regar` não aparece em `permitido` aqui: é cuidado básico (NUCLEO).
     'pos-transplante': {
-      permitido: [
-        {
-          acao: 'regar',
-          texto: 'Regar normalmente.',
-          porque: 'A raiz cortada no transplante ainda precisa de água disponível para cicatrizar e emitir raízes novas.',
-          guiaAncora: 'guia#pos-transplante-regar'
-        }
-      ],
       proibido: [
         {
           acao: 'adubar',
@@ -321,6 +290,67 @@ Bonsai.regras = (function () {
       ]
     }
   };
+
+  // ---------------------------------------------------------------------
+  // Cuidado básico — spec 5.1 "Cuidado básico": regar, observar e medir são
+  // sempre ✅, em qualquer fase (inclusive `fase: null`) e qualquer estado,
+  // sem exceção. Nenhuma delas toca na planta, e `medir` é o dado que
+  // governa a troca de fase — por isso vivem como lista própria, aplicada
+  // depois de fase e estado, em vez de espalhadas pelas tabelas: uma árvore
+  // com `fase: null` não tem de quem herdar, e foi assim que a Serissa e a
+  // Azaleia ficaram sem `medir` na primeira versão.
+  // ---------------------------------------------------------------------
+  var NUCLEO = [
+    {
+      acao: 'regar',
+      texto: 'Regar conforme o perfil de rega efetivo desta espécie.',
+      porque: 'Regar não é intervenção, é manutenção básica que uma planta viva sempre precisa — nenhuma fase e nenhum estado tornam isso arriscado.',
+      guiaAncora: 'guia#nucleo-regar'
+    },
+    {
+      acao: 'observar',
+      texto: 'Observar, anotar e fotografar o estado atual da árvore, sem mexer.',
+      porque: 'Observar não toca na planta; é assim que se percebe cedo um sinal de melhora ou piora, em qualquer fase ou estado.',
+      guiaAncora: 'guia#nucleo-observar'
+    },
+    {
+      acao: 'medir',
+      texto: 'Medir o tronco com fita métrica.',
+      porque: 'Medir não toca na planta, e é o único dado real que decide quando uma árvore em engorda está pronta para o corte de decepe — esconder a medição esconde essa decisão.',
+      guiaAncora: 'guia#nucleo-medir'
+    }
+  ];
+
+  // Estados em que uma ✅ vinda só da fase, sem re-autorização explícita do
+  // próprio estado, deixa de ser ✅ e vira ⚠️ (spec 5.1 "Estado restritivo
+  // nega por omissão"). `saudavel` não entra aqui: nele a fase manda sozinha.
+  var ESTADOS_RESTRITIVOS = { adaptacao: true, recuperacao: true, 'pos-transplante': true };
+
+  var NOTA_ESTADO_RESTRITIVO = {
+    adaptacao: {
+      nome: 'adaptação',
+      checar: 'espere a árvore firmar no ambiente novo antes de considerar isto'
+    },
+    recuperacao: {
+      nome: 'recuperação',
+      checar: 'espere aparecer um broto novo antes de considerar isto'
+    },
+    'pos-transplante': {
+      nome: 'pós-transplante',
+      checar: 'espere terminar a carência do transplante antes de considerar isto'
+    }
+  };
+
+  function rebaixarPorEstado(item, estado) {
+    var nota = NOTA_ESTADO_RESTRITIVO[estado];
+    return {
+      acao: item.acao,
+      texto: item.texto + ' Normalmente permitido nesta fase, mas a árvore está em ' + nota.nome + ' agora.',
+      porque: item.porque + ' Enquanto o estado for ' + nota.nome + ', ' + nota.checar + '.',
+      guiaAncora: item.guiaAncora,
+      origem: 'fase'
+    };
+  }
 
   function copiarItem(item, origem) {
     return { acao: item.acao, texto: item.texto, porque: item.porque, guiaAncora: item.guiaAncora, origem: origem };
@@ -385,23 +415,13 @@ Bonsai.regras = (function () {
     var resultado = { permitido: [], proibido: [], atencao: [] };
 
     // fase pode legitimamente ser null (chegada recente, em recuperação) —
-    // nunca inventar uma fase padrão (CONTEXTO invariante 1). Mesmo sem fase
-    // definida, regar continua sendo uma ação de linha de base: nenhuma das
-    // quatro fases proíbe regar, e uma árvore viva não pode ficar com
-    // `permitido` vazio só porque a doutrina de fase ainda não foi decidida.
+    // nunca inventar uma fase padrão (CONTEXTO invariante 1).
     if (arvore.fase === null) {
       resultado.atencao.push({
         acao: 'definir-fase',
         texto: 'Fase ainda não definida — defina quando a árvore estiver pronta.',
         porque: 'Sem uma fase definida não dá para saber quais ações fazem sentido agora nem o que evitar; a tarefa aberta ajuda a decidir isso.',
         guiaAncora: 'guia#fase-indefinida',
-        origem: 'fase'
-      });
-      resultado.permitido.push({
-        acao: 'regar',
-        texto: 'Regar pelo perfil de rega da espécie, normalmente.',
-        porque: 'Regar não depende de doutrina de fase; enquanto a fase não é decidida, a água que a planta já recebe não deve parar.',
-        guiaAncora: 'guia#fase-indefinida-regar',
         origem: 'fase'
       });
     } else {
@@ -467,6 +487,41 @@ Bonsai.regras = (function () {
       resultado[i.lista].push({
         acao: i.acao, texto: i.texto, porque: i.porque, guiaAncora: i.guiaAncora, origem: 'estado'
       });
+    });
+
+    // Estado restritivo nega por omissão (spec 5.1): numa árvore em
+    // adaptacao/recuperacao/pos-transplante, uma ✅ que sobrou da fase (ou
+    // seja, o estado não tinha nada com essa acao, então não foi
+    // substituída no passo de dedupe acima) não fica ✅ por herança
+    // silenciosa — vira ⚠️, citando o estado e o que checar antes. Isso
+    // fecha a classe de bug do "transplantar" liberado 4 dias após o
+    // transplante: aqui não é mais um caso específico corrigido, é a regra.
+    if (estadoAplica && ESTADOS_RESTRITIVOS[arvore.estado]) {
+      var mantidos = [];
+      resultado.permitido.forEach(function (item) {
+        if (item.origem === 'fase') {
+          resultado.atencao.push(rebaixarPorEstado(item, arvore.estado));
+        } else {
+          mantidos.push(item);
+        }
+      });
+      resultado.permitido = mantidos;
+    }
+
+    // Cuidado básico (spec 5.1): regar, observar e medir são sempre ✅,
+    // aplicados por último e só se nenhuma tabela mais específica (fase ou
+    // estado) já tiver colocado essa acao em alguma lista — o item mais
+    // específico vence, nunca há a mesma acao duas vezes.
+    var acoesPresentes = {};
+    ['permitido', 'proibido', 'atencao'].forEach(function (lista) {
+      resultado[lista].forEach(function (item) { acoesPresentes[item.acao] = true; });
+    });
+    NUCLEO.forEach(function (item) {
+      if (!acoesPresentes[item.acao]) {
+        resultado.permitido.push({
+          acao: item.acao, texto: item.texto, porque: item.porque, guiaAncora: item.guiaAncora, origem: 'nucleo'
+        });
+      }
     });
 
     return resultado;

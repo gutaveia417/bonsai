@@ -184,3 +184,100 @@ assert.grupo('regras - temporada vazia proíbe, temporada null vira atenção', 
   assert.ok(itemNunca.porque.length > 10 && itemSemInfo.porque.length > 10,
     'os dois avisos explicam o porquê, não só que o campo está vazio');
 });
+
+// fix round 2 — R18: regar, observar e medir são cuidado básico, sempre ✅,
+// em qualquer fase (inclusive null) e qualquer estado, sem exceção. Antes
+// desta correção, uma árvore com fase: null não tinha de quem herdar essas
+// três ações, e a Serissa/Azaleia ficavam sem `medir`.
+assert.grupo('regras - cuidado basico (regar, observar, medir) sempre permitido (R18)', function () {
+  var db = Bonsai.dadosIniciais.montar();
+  var especieBase = db.especies.filter(function (e) { return e.id === 'jabuticaba'; })[0];
+  var FASES = ['engorda', 'decepe', 'estrutura', 'refino', null];
+  var ESTADOS = ['saudavel', 'adaptacao', 'recuperacao', 'pos-transplante'];
+  var NUCLEO = ['regar', 'observar', 'medir'];
+
+  FASES.forEach(function (fase) {
+    ESTADOS.forEach(function (estado) {
+      var arvore = {
+        id: 'nucleo-' + fase + '-' + estado,
+        fase: fase,
+        estado: estado,
+        estadoAte: estado === 'pos-transplante' ? '2099-01-01' : null
+      };
+      var res = Bonsai.regras.paraArvore(arvore, especieBase, '2026-09-05');
+      var acoesPermitido = res.permitido.map(function (i) { return i.acao; });
+      var rotulo = 'fase=' + fase + ' estado=' + estado;
+
+      NUCLEO.forEach(function (acaoNucleo) {
+        assert.ok(acoesPermitido.indexOf(acaoNucleo) >= 0, rotulo + ': ' + acaoNucleo + ' está em permitido');
+      });
+
+      // dedupe: nenhuma das três aparece duas vezes em permitido
+      NUCLEO.forEach(function (acaoNucleo) {
+        var vezes = acoesPermitido.filter(function (a) { return a === acaoNucleo; }).length;
+        assert.eq(vezes, 1, rotulo + ': ' + acaoNucleo + ' aparece exatamente uma vez em permitido (achou ' + vezes + ')');
+      });
+    });
+  });
+});
+
+// fix round 2 — nenhuma tabela crua pode proibir cuidado básico; se alguma
+// colocar, é bug de tabela e o teste tem que gritar.
+assert.grupo('regras - regar, observar e medir nunca aparecem em proibido em tabela alguma', function () {
+  var NUCLEO = ['regar', 'observar', 'medir'];
+
+  Object.keys(Bonsai.regras.POR_FASE).forEach(function (fase) {
+    (Bonsai.regras.POR_FASE[fase].proibido || []).forEach(function (item) {
+      assert.eq(NUCLEO.indexOf(item.acao), -1, 'POR_FASE.' + fase + '.proibido não pode conter ' + item.acao);
+    });
+  });
+
+  Object.keys(Bonsai.regras.POR_ESTADO).forEach(function (estado) {
+    (Bonsai.regras.POR_ESTADO[estado].proibido || []).forEach(function (item) {
+      assert.eq(NUCLEO.indexOf(item.acao), -1, 'POR_ESTADO.' + estado + '.proibido não pode conter ' + item.acao);
+    });
+  });
+});
+
+// fix round 2 — R19: em estado restritivo (adaptacao, recuperacao,
+// pos-transplante), uma permissão que vem só da fase (origem: 'fase') e que
+// o estado não re-autoriza explicitamente nunca fica ✅ por herança — ela
+// tem que virar ⚠️. saudavel não é restritivo: nele a fase manda sozinha.
+assert.grupo('regras - estado restritivo nega por omissao, nunca herda ✅ da fase (R19)', function () {
+  var db = Bonsai.dadosIniciais.montar();
+  var especieBase = db.especies.filter(function (e) { return e.id === 'jabuticaba'; })[0];
+  var FASES = ['engorda', 'decepe', 'estrutura', 'refino', null];
+  var RESTRITIVOS = ['adaptacao', 'recuperacao', 'pos-transplante'];
+
+  FASES.forEach(function (fase) {
+    RESTRITIVOS.forEach(function (estado) {
+      var arvore = {
+        id: 'restritivo-' + fase + '-' + estado,
+        fase: fase,
+        estado: estado,
+        estadoAte: estado === 'pos-transplante' ? '2099-01-01' : null
+      };
+      var res = Bonsai.regras.paraArvore(arvore, especieBase, '2026-09-05');
+      var vazaram = res.permitido.filter(function (i) { return i.origem === 'fase'; }).map(function (i) { return i.acao; });
+      assert.eq(vazaram.length, 0,
+        'fase=' + fase + ' estado=' + estado + ': nenhuma permissão de fase escapa por herança silenciosa (achou: ' + vazaram.join(', ') + ')');
+    });
+  });
+
+  // caso concreto: decepe tem "decepar" permitido só na fase; numa árvore
+  // em adaptação isso precisa virar atenção, mencionando o estado.
+  var arvoreDecepeAdaptacao = { id: 'decepe-adaptacao', fase: 'decepe', estado: 'adaptacao', estadoAte: null };
+  var resDecepe = Bonsai.regras.paraArvore(arvoreDecepeAdaptacao, especieBase, '2026-09-05');
+  assert.eq(resDecepe.permitido.filter(function (i) { return i.acao === 'decepar'; }).length, 0,
+    'decepar não fica ✅ numa árvore em adaptação só porque a fase permite');
+  var itemRebaixado = resDecepe.atencao.filter(function (i) { return i.acao === 'decepar'; })[0];
+  assert.ok(itemRebaixado, 'decepar rebaixado aparece em atenção');
+  assert.ok(itemRebaixado && (/adapta/i.test(itemRebaixado.texto) || /adapta/i.test(itemRebaixado.porque)),
+    'o texto do rebaixamento diz qual estado (adaptação) causou isso');
+
+  // saudavel não é restritivo — a fase continua mandando sozinha
+  var arvoreDecepeSaudavel = { id: 'decepe-saudavel', fase: 'decepe', estado: 'saudavel', estadoAte: null };
+  var resDecepeSaudavel = Bonsai.regras.paraArvore(arvoreDecepeSaudavel, especieBase, '2026-09-05');
+  assert.ok(resDecepeSaudavel.permitido.some(function (i) { return i.acao === 'decepar'; }),
+    'saudavel não é restritivo: decepar continua ✅ vindo da fase');
+});
