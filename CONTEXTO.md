@@ -136,6 +136,33 @@ deve voltar vazio.
   uma mão só e a outra suja.
 - **Zero rede em runtime.** Nenhum hotlink, nenhuma fonte externa, nenhuma API.
 
+## Como verificar: quatro métodos, e a suíte não é nenhum deles
+
+Toda falha séria deste projeto passou por uma suíte verde. As 2300+ asserções
+confirmam o que alguém pensou em perguntar; elas nunca perguntaram nada sozinhas.
+Escolha o método pelo tipo do que você produziu:
+
+| você produziu | verifique assim |
+|---|---|
+| **dado** | compare linha a linha com a fonte de verdade (a spec, o que o dono disse) |
+| **lógica** | execute e leia a saída, para todas as combinações, não só as do seed |
+| **texto de conselho** | leia como bonsai, não como string — imagine seguindo aquilo com a planta na mão |
+| **desenho** | abra no navegador e olhe como imagem; markup válido pode ser visualmente incompreensível |
+
+Casos reais deste projeto, um de cada: um regime de adubação inventado para a
+Azaleia (pego comparando com a spec); transplante liberado numa árvore
+transplantada quatro dias antes (pego executando as 60 combinações fase×estado);
+o teste do dedo mandado na superfície em cinco das sete árvores, ensinando o
+erro nº 4 do próprio guia (pego lendo o texto como conselho); quatro diagramas
+com texto cortado indo para o guia impresso (pego abrindo no navegador).
+
+**Existe um quinto tipo que nenhum dos quatro alcança: usabilidade real.** Alvo
+de toque pequeno demais, texto ilegível sob o sol do meio-dia, fluxo que exige
+oito toques, informação importante abaixo da dobra. Isso só o dono descobre,
+usando no quintal. Quando ele pedir para parar e receber o que existe, **pare**
+— rigor de verificação interna não substitui uso, e nenhum número de asserções
+prova que o app é bom de usar.
+
 ## Nunca toque na máquina fora deste repositório
 
 Esta é a máquina pessoal de alguém, com trabalho aberto nela. Já aconteceu uma
