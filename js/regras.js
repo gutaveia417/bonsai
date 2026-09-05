@@ -9,6 +9,9 @@ Bonsai.regras = (function () {
   // que uma pessoa possa editar o texto sem tocar em lógica.
   // ---------------------------------------------------------------------
   var POR_FASE = {
+    // "podar-raiz" (permitido, ato deliberado na janela de transplante) e
+    // "podar" (atenção, observação passiva sobre ramo baixo engrossando) são
+    // atos físicos diferentes — nunca a mesma acao em listas diferentes.
     engorda: {
       permitido: [
         {
@@ -36,7 +39,7 @@ Bonsai.regras = (function () {
           guiaAncora: 'guia#engorda-medir'
         },
         {
-          acao: 'podar',
+          acao: 'podar-raiz',
           texto: 'Podar raiz apenas dentro da janela de transplante, deixando a copa crescer solta entre uma poda e outra.',
           porque: 'Copa solta é o que gera grossura de tronco; podar raiz na janela certa renova o vaso sem parar o crescimento da parte de cima.',
           guiaAncora: 'guia#engorda-podar-raiz'
@@ -67,11 +70,16 @@ Bonsai.regras = (function () {
     },
 
     decepe: {
+      // "decepar" (o corte em si), "decepar cedo/fora de época" e "cuidado,
+      // é irreversível" são o mesmo ato físico visto de três ângulos — a
+      // spec 5.1 exige acao distinta por lista, então o corte correto e a
+      // nota de irreversibilidade ficam no mesmo item de `permitido`, e só
+      // o corte no momento errado vira `decepar-precoce` em `proibido`.
       permitido: [
         {
           acao: 'decepar',
           texto: 'Fazer o corte baixo do decepe e selar o corte logo em seguida.',
-          porque: 'O selante evita que o corte grande fique exposto a fungo e umidade enquanto caleja.',
+          porque: 'O selante evita que o corte grande fique exposto a fungo e umidade enquanto caleja. É um corte de um dia só, mas define a estrutura da árvore por anos — depois de decepado não tem como desfazer a escolha de altura e ângulo, então vale conferir duas vezes antes de cortar.',
           guiaAncora: 'guia#decepe-corte'
         },
         {
@@ -83,23 +91,18 @@ Bonsai.regras = (function () {
       ],
       proibido: [
         {
-          acao: 'decepar',
+          acao: 'decepar-precoce',
           texto: 'Decepar antes de o tronco atingir o diâmetro-alvo, ou fora da época de brotação.',
           porque: 'Decepar cedo demais deixa um tronco fino acima do corte, e fora da brotação a árvore não tem reserva de energia para emitir os brotos que vão virar os novos galhos.',
           guiaAncora: 'guia#decepe-nao-antecipar'
-        }
-      ],
-      atencao: [
-        {
-          acao: 'decepar',
-          texto: 'O decepe é um corte de um dia só, mas define a estrutura da árvore por anos.',
-          porque: 'Depois de decepado não tem como desfazer a escolha de altura e ângulo do corte — vale conferir duas vezes antes de cortar.',
-          guiaAncora: 'guia#decepe-consequencia'
         }
       ]
     },
 
     estrutura: {
+      // "podar" (seleção/estruturação) e "podar-copa" (corte grande demais)
+      // são atos físicos diferentes, como já vale em engorda/refino; "aramar"
+      // (fixar arame) e "conferir-arame" (checar o que já está fixado) idem.
       permitido: [
         {
           acao: 'podar',
@@ -116,7 +119,7 @@ Bonsai.regras = (function () {
       ],
       proibido: [
         {
-          acao: 'podar',
+          acao: 'podar-copa',
           texto: 'Remover mais de um terço da folhagem de uma vez.',
           porque: 'Cortar folhagem demais de uma vez pode jogar a árvore em estresse severo e comprometer a energia de recuperação.',
           guiaAncora: 'guia#estrutura-nao-mais-de-um-terco'
@@ -127,7 +130,7 @@ Bonsai.regras = (function () {
         // app inteiro — pedida explicitamente pelo usuário. Não usar este
         // caso como precedente para inventar outros intervalos fixos.
         {
-          acao: 'aramar',
+          acao: 'conferir-arame',
           texto: 'Conferir o arame a cada 30 dias.',
           porque: 'Arame esquecido encrava na casca conforme o galho engrossa; conferir mensalmente evita que a marca vire uma cicatriz permanente.',
           guiaAncora: 'guia#estrutura-conferir-arame'
@@ -170,6 +173,20 @@ Bonsai.regras = (function () {
   // ---------------------------------------------------------------------
   var POR_ESTADO = {
     adaptacao: {
+      permitido: [
+        {
+          acao: 'regar',
+          texto: 'Regar pelo perfil de rega da espécie, normalmente.',
+          porque: 'Uma planta em adaptação continua precisando de água como sempre; suspender a rega não ajuda a fixação, só reduz o pouco fôlego que ela já tem para se ajustar.',
+          guiaAncora: 'guia#adaptacao-regar'
+        },
+        {
+          acao: 'observar',
+          texto: 'Observar como a planta reage ao ambiente novo, sem mexer.',
+          porque: 'Boa parte da adaptação é acompanhar sinais — folha nova, folha caindo, cor — em vez de agir; intervir demais nesta fase atrapalha mais do que ajuda.',
+          guiaAncora: 'guia#adaptacao-observar'
+        }
+      ],
       proibido: [
         {
           acao: 'adubar',
@@ -182,6 +199,12 @@ Bonsai.regras = (function () {
           texto: 'Podar durante a adaptação.',
           porque: 'Toda poda cria um novo ponto de estresse, e a planta ainda está gastando energia só para se firmar no vaso ou substrato novo.',
           guiaAncora: 'guia#adaptacao-nao-podar'
+        },
+        {
+          acao: 'podar-raiz',
+          texto: 'Podar raiz durante a adaptação.',
+          porque: 'Poda de raiz só acontece dentro de um transplante, e transplantar de novo agora reinicia o mesmo estresse do qual a planta ainda está se firmando.',
+          guiaAncora: 'guia#adaptacao-nao-podar-raiz'
         },
         {
           acao: 'transplantar',
@@ -201,8 +224,8 @@ Bonsai.regras = (function () {
     recuperacao: {
       permitido: [
         {
-          acao: 'mudar-lugar',
-          texto: 'Manter no lugar atual, à sombra.',
+          acao: 'manter-sombra',
+          texto: 'Manter no lugar atual, à sombra, sem mudar de lugar.',
           porque: 'Trocar de posição agora soma mais uma variável de estresse a uma planta que já está tentando se recuperar de um dano sério.',
           guiaAncora: 'guia#recuperacao-manter-sombra'
         },
@@ -211,6 +234,12 @@ Bonsai.regras = (function () {
           texto: 'Manter água regular, testando o substrato antes de cada rega.',
           porque: 'Regularidade sem excesso mantém a raiz viva sem repetir uma possível causa do dano, enquanto ela ainda não foi confirmada.',
           guiaAncora: 'guia#recuperacao-regar'
+        },
+        {
+          acao: 'esperar',
+          texto: 'Esperar o aparecimento de um broto novo antes de voltar a mexer na árvore.',
+          porque: 'Broto novo é o sinal visível de que a planta recuperou energia suficiente para reagir bem a poda, arame ou adubo.',
+          guiaAncora: 'guia#recuperacao-esperar-broto'
         }
       ],
       proibido: [
@@ -225,6 +254,12 @@ Bonsai.regras = (function () {
           texto: 'Podar durante a recuperação.',
           porque: 'Cortar agora tira reserva de energia justamente da planta que mais precisa dela; espere aparecer um broto novo antes de voltar a mexer.',
           guiaAncora: 'guia#recuperacao-nao-podar'
+        },
+        {
+          acao: 'podar-raiz',
+          texto: 'Podar raiz durante a recuperação.',
+          porque: 'Poda de raiz só acontece dentro de um transplante, e não há transplante seguro para fazer numa planta que ainda está tentando se recuperar de um dano sério.',
+          guiaAncora: 'guia#recuperacao-nao-podar-raiz'
         },
         {
           acao: 'aramar',
@@ -262,11 +297,23 @@ Bonsai.regras = (function () {
           texto: 'Podar até {ate}.',
           porque: 'A planta está gastando energia para reconstruir raiz cortada; qualquer poda agora compete com essa prioridade.',
           guiaAncora: 'guia#pos-transplante-nao-podar'
+        },
+        {
+          acao: 'podar-raiz',
+          texto: 'Podar raiz de novo até {ate}.',
+          porque: 'A raiz já foi cortada uma vez neste transplante recente; cortar de novo agora não deixa tempo para cicatrizar antes de emitir raízes novas.',
+          guiaAncora: 'guia#pos-transplante-nao-podar-raiz'
+        },
+        {
+          acao: 'transplantar',
+          texto: 'Transplantar de novo até {ate}.',
+          porque: 'Uma árvore recém-transplantada é a que menos aguenta ser transplantada de novo — a raiz ainda está cicatrizando do corte anterior.',
+          guiaAncora: 'guia#pos-transplante-nao-transplantar'
         }
       ],
       atencao: [
         {
-          acao: 'mudar-lugar',
+          acao: 'manter-sombra',
           texto: 'Manter à sombra por 3 a 4 semanas depois do transplante.',
           porque: 'Sol direto demais logo depois do transplante aumenta a perda de água pela folhagem, e a raiz ainda cortada não consegue repor o que se perde.',
           guiaAncora: 'guia#pos-transplante-sombra'
@@ -294,7 +341,7 @@ Bonsai.regras = (function () {
       return {
         lista: 'atencao',
         texto: 'Fórmula de adubo não definida para esta espécie.',
-        porque: 'Sem uma fórmula base registrada não dá para saber o que aplicar; defina a fórmula antes da primeira adubação.',
+        porque: 'Cada fórmula de adubo tem uma proporção diferente de NPK; aplicar uma fórmula chutada pode faltar o nutriente que esta espécie mais precisa agora, ou sobrar em excesso e queimar raiz.',
         guiaAncora: 'guia#adubo-formula-nao-definida'
       };
     }
@@ -303,7 +350,7 @@ Bonsai.regras = (function () {
       return {
         lista: 'atencao',
         texto: 'Época de adubação não definida para esta espécie.',
-        porque: 'Sem saber em quais meses esta espécie aduba, não dá para afirmar que hoje é temporada; defina a temporada antes de adubar.',
+        porque: 'Adubar fora da época de crescimento ativo desperdiça nutriente e pode estressar raízes que não estão absorvendo; sem saber os meses certos desta espécie, não dá para saber se hoje ajuda ou atrapalha.',
         guiaAncora: 'guia#adubo-temporada-nao-definida'
       };
     }
@@ -338,13 +385,23 @@ Bonsai.regras = (function () {
     var resultado = { permitido: [], proibido: [], atencao: [] };
 
     // fase pode legitimamente ser null (chegada recente, em recuperação) —
-    // nunca inventar uma fase padrão (CONTEXTO invariante 1).
+    // nunca inventar uma fase padrão (CONTEXTO invariante 1). Mesmo sem fase
+    // definida, regar continua sendo uma ação de linha de base: nenhuma das
+    // quatro fases proíbe regar, e uma árvore viva não pode ficar com
+    // `permitido` vazio só porque a doutrina de fase ainda não foi decidida.
     if (arvore.fase === null) {
       resultado.atencao.push({
         acao: 'definir-fase',
         texto: 'Fase ainda não definida — defina quando a árvore estiver pronta.',
         porque: 'Sem uma fase definida não dá para saber quais ações fazem sentido agora nem o que evitar; a tarefa aberta ajuda a decidir isso.',
         guiaAncora: 'guia#fase-indefinida',
+        origem: 'fase'
+      });
+      resultado.permitido.push({
+        acao: 'regar',
+        texto: 'Regar pelo perfil de rega da espécie, normalmente.',
+        porque: 'Regar não depende de doutrina de fase; enquanto a fase não é decidida, a água que a planta já recebe não deve parar.',
+        guiaAncora: 'guia#fase-indefinida-regar',
         origem: 'fase'
       });
     } else {
