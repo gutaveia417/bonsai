@@ -59,3 +59,193 @@ body { margin: 0; font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, s
   font: inherit;
   font-weight: 700;
 }
+
+/* ---- Tela Hoje (Task 9) ---- */
+
+#tela section {
+  margin-bottom: 24px;
+}
+
+#tela h2 {
+  font-size: 18px;
+  margin: 0 0 12px;
+}
+
+.vazio {
+  color: #555;
+  font-style: italic;
+}
+
+/* Alertas — cor por nível. bloqueio (vermelho) > atencao (âmbar) > info
+   (azul), na mesma ordem em que a tela os lista. Cor nunca é a única pista:
+   cada card também tem um rótulo de texto (ROTULO_NIVEL). */
+.alerta {
+  border: 1px solid #ccc;
+  border-left-width: 6px;
+  border-radius: 4px;
+  padding: 12px;
+  margin-bottom: 12px;
+}
+
+.alerta h3 {
+  margin: 4px 0;
+  font-size: 16px;
+}
+
+.alerta p {
+  margin: 4px 0;
+}
+
+.alerta-nivel-rotulo {
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 0.03em;
+}
+
+.alerta-bloqueio {
+  border-color: #b00020;
+  background: #fdecea;
+}
+.alerta-bloqueio .alerta-nivel-rotulo { color: #b00020; }
+
+.alerta-atencao {
+  border-color: #8a5a00;
+  background: #fff6e0;
+}
+.alerta-atencao .alerta-nivel-rotulo { color: #8a5a00; }
+
+.alerta-info {
+  border-color: #0d47a1;
+  background: #eaf2fd;
+}
+.alerta-info .alerta-nivel-rotulo { color: #0d47a1; }
+
+.alerta-progresso {
+  height: 10px;
+  background: #ddd;
+  border-radius: 6px;
+  overflow: hidden;
+  margin: 8px 0 4px;
+}
+
+.alerta-progresso-barra {
+  height: 100%;
+  background: #2e7d32;
+}
+
+.alerta-medida {
+  font-weight: 700;
+}
+
+.alerta-acoes {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+/* Tarefas e checklist de rega compartilham o mesmo cartão simples. */
+.tarefa {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 12px;
+  margin-bottom: 12px;
+}
+
+.tarefa h3 {
+  margin: 4px 0;
+  font-size: 16px;
+}
+
+.tarefa-arvore {
+  font-weight: 700;
+  color: #2e7d32;
+  margin: 0;
+}
+
+.rega-grupo {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 12px;
+  margin-bottom: 12px;
+}
+
+.rega-grupo h3 {
+  margin: 0 0 4px;
+  font-size: 16px;
+}
+
+.rega-instrucao {
+  font-weight: 700;
+}
+
+.rega-lista {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+}
+
+.rega-linha {
+  border-top: 1px solid #eee;
+  padding: 10px 0;
+}
+
+.rega-apelido {
+  font-weight: 700;
+  margin: 0 0 4px;
+}
+
+/* A nota de um regaOverride (ex.: a da Azaleia) é a decisão errada que este
+   checklist existe para evitar — precisa saltar aos olhos, não se misturar
+   ao resto do texto. Ver CONTEXTO.md invariante 4. */
+.rega-nota-alerta {
+  background: #fdecea;
+  border: 2px solid #b00020;
+  color: #7a0016;
+  font-weight: 700;
+  border-radius: 4px;
+  padding: 8px;
+  margin: 6px 0;
+}
+
+.checklist-aviso-estacao {
+  background: #eaf2fd;
+  border: 1px solid #0d47a1;
+  border-radius: 4px;
+  padding: 8px;
+}
+
+/* Botões — alvo de toque mínimo 44x44 (usuário usa com uma mão só, no
+   quintal). Ver CONTEXTO.md, restrições técnicas. */
+.botao-secundario {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 8px 14px;
+  border: 1px solid #2e7d32;
+  border-radius: 4px;
+  background: #fff;
+  color: #2e7d32;
+  font: inherit;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.botao-grande {
+  display: block;
+  width: 100%;
+  min-height: 56px;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  background: #2e7d32;
+  color: #fff;
+  font: inherit;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+}
