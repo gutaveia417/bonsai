@@ -193,21 +193,29 @@ assert.grupo('rega — invariantes', function () {
   // 9. Nenhum texto de rega ancora na superfície (spec 4.6 pós fix round
   // 2: o teste do dedo é a 2–3 cm nos cinco perfis, sem exceção, e o que
   // muda de um perfil para o outro é o que aquele resultado significa,
-  // nunca onde o dedo entra). Uma `instrucao` pode citar "superfície"
-  // desde que a mesma frase negue explicitamente julgar só por cima —
-  // sem essa negação, é exatamente o falso positivo que faz o app
-  // ensinar na tela de rega o erro que o guia lista como erro clássico.
+  // nunca onde o dedo entra). Varre tanto `instrucao` quanto `teste` — o
+  // bug original (fix round 1) vivia no `teste` do sempre-umido, então um
+  // laço que varresse só a `instrucao` não pegaria o caso que o motivou.
+  // A spec §4.6 trata os dois níveis como a mesma falha: "uma frase de
+  // resumo cujo texto operativo logo abaixo esteja correto" também conta.
+  // Uma string pode citar "superfície" desde que ela mesma negue
+  // explicitamente julgar só por cima — sem essa negação, é o falso
+  // positivo que faz o app ensinar na tela de rega o erro que o guia
+  // lista como erro clássico.
   (function () {
+    var negaJulgamentoPorCima = /sem confiar|n[ãa]o confi|n[ãa]o (s[oó]|apenas)\b/i;
     IDS_PERFIS.forEach(function (id) {
       var perfil = Bonsai.rega.PERFIS[id];
-      var mencionaSuperficie = /superf[íi]cie/i.test(perfil.instrucao);
-      if (mencionaSuperficie) {
-        var negaJulgamentoPorCima = /sem confiar|n[ãa]o confi|n[ãa]o (s[oó]|apenas)\b/i.test(perfil.instrucao);
-        assert.ok(negaJulgamentoPorCima,
-          id + ': instrucao cita superfície mas nega o julgamento por cima (recebi: "' + perfil.instrucao + '")');
-      } else {
-        assert.ok(true, id + ': instrucao não ancora na superfície');
-      }
+      ['instrucao', 'teste'].forEach(function (campo) {
+        var texto = perfil[campo];
+        var mencionaSuperficie = /superf[íi]cie/i.test(texto);
+        if (mencionaSuperficie) {
+          assert.ok(negaJulgamentoPorCima.test(texto),
+            id + '.' + campo + ': cita superfície mas nega o julgamento por cima (recebi: "' + texto + '")');
+        } else {
+          assert.ok(true, id + '.' + campo + ': não ancora na superfície');
+        }
+      });
     });
   })();
 });
