@@ -163,3 +163,52 @@ assert.grupo('alertas — invariantes', function () {
     assert.ok(achaArame(Bonsai.alertas.ativos(db, '2026-06-11')).length > 0, 'um dia depois de ateData: reaparece');
   })();
 });
+
+// ---------------------------------------------------------------------
+// Fix round 1 — item "Important" da revisão: a escalada do cartão de
+// gatilho por medida para nivel: 'atencao' ao atingir o alvo de 80 mm não
+// tinha nenhum dado de teste chegando lá. Sem isso, aquele ramo do código
+// só ia rodar de verdade daqui a anos (quando o tronco real da jabuticaba
+// chegasse a 80 mm), com cobertura zero até lá — o mesmo padrão que já
+// custou duas rodadas na Task 4 (fases decepe/estrutura sem árvore no
+// seed que as alcançasse).
+// ---------------------------------------------------------------------
+assert.grupo('alertas — gatilho por medida atinge e ultrapassa o alvo de 80 mm', function () {
+  var achar = function (lista, re) { return lista.filter(function (a) { return re.test(a.id); }); };
+
+  // Atinge o alvo exatamente (80 mm).
+  var dbAtinge = Bonsai.dadosIniciais.montar();
+  dbAtinge.eventos.push({
+    id: 'e-atinge', arvoreId: 'jabuticaba', data: '2026-09-10', tipo: 'medicao', nota: '',
+    dados: { diametroMm: 80, alturaDaMedidaCm: 5, metodo: 'fita' }, fotoId: null
+  });
+  var gAtinge = achar(Bonsai.alertas.gerar(dbAtinge, '2026-09-11'), /gatilho.*jabuticaba/)[0];
+  assert.ok(gAtinge, 'existe o card de gatilho ao atingir exatamente o alvo');
+  assert.eq(gAtinge.nivel, 'atencao', 'ao atingir 80 mm o nivel sobe para atencao');
+  assert.ok(/alvo/i.test(gAtinge.titulo), 'o titulo menciona o alvo atingido');
+  assert.ok(/80 mm/.test(gAtinge.corpo), 'o corpo cita o valor atingido');
+  assert.ok(/decepe/i.test(gAtinge.corpo), 'o corpo remete à orientação de decepe, sem afirmar que já está liberado');
+  assert.eq(/liberad[oa]|autorizad[oa]/i.test(gAtinge.corpo), false,
+    'o corpo não afirma que o decepe já está liberado — só remete à orientação do guia');
+  assert.eq(gAtinge.guiaAncora, 'guia#decepe-corte', 'a ancora aponta para a orientação de decepe');
+  assert.eq(gAtinge.progresso.atualMm, 80, 'progresso reflete a medição real');
+  assert.eq(gAtinge.progresso.alvoMm, 80, 'alvo continua 80');
+
+  // Ultrapassa o alvo (95 mm), numa medição mais recente ainda.
+  var dbUltrapassa = Bonsai.dadosIniciais.montar();
+  dbUltrapassa.eventos.push({
+    id: 'e-antes', arvoreId: 'jabuticaba', data: '2026-09-10', tipo: 'medicao', nota: '',
+    dados: { diametroMm: 80, alturaDaMedidaCm: 5, metodo: 'fita' }, fotoId: null
+  });
+  dbUltrapassa.eventos.push({
+    id: 'e-depois', arvoreId: 'jabuticaba', data: '2026-10-01', tipo: 'medicao', nota: '',
+    dados: { diametroMm: 95, alturaDaMedidaCm: 5, metodo: 'fita' }, fotoId: null
+  });
+  var gUltrapassa = achar(Bonsai.alertas.gerar(dbUltrapassa, '2026-10-05'), /gatilho.*jabuticaba/)[0];
+  assert.ok(gUltrapassa, 'existe o card de gatilho ao ultrapassar o alvo');
+  assert.eq(gUltrapassa.nivel, 'atencao', 'ao ultrapassar 80 mm o nivel continua atencao');
+  assert.eq(gUltrapassa.progresso.atualMm, 95, 'usa a última medição, não a primeira que já tinha atingido o alvo');
+  assert.eq(gUltrapassa.progresso.alvoMm, 80, 'alvo continua 80');
+  assert.eq(gUltrapassa.guiaAncora, 'guia#decepe-corte', 'a ancora continua a de decepe ao ultrapassar o alvo');
+  assert.ok(gUltrapassa.guiaAncora && gUltrapassa.guiaAncora.length > 0, 'guiaAncora não vazio');
+});

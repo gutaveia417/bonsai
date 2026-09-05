@@ -74,6 +74,13 @@ Bonsai.alertas = (function () {
       // de onde no guia isso é explicado. Só cai no fallback se a fase
       // desta árvore nem menciona transplantar (nenhuma tree do seed cai
       // aqui hoje, mas decepe/estrutura/refino não têm item de transplante).
+      //
+      // PROVISÓRIO (fix round 1, revisão): 'guia#engorda-vaso' fala de vaso
+      // grande na fase de engorda, não de planejar um transplante — é
+      // semanticamente errada para este fallback. Hoje é código morto
+      // (nenhuma árvore do seed cai aqui), por isso não foi trocada agora;
+      // quem escrever o guia não deve assumir que esta âncora está correta
+      // e construir em cima dela sem revisar este ponto primeiro.
       var itemTransplantar = regrasArvore.permitido.filter(function (i) { return i.acao === 'transplantar'; })[0];
       var guiaAncora = itemTransplantar ? itemTransplantar.guiaAncora : 'guia#engorda-vaso';
 
