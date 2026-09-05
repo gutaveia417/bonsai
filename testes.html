@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Testes — Bonsai</title>
+<style>
+  body { font: 14px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; padding: 16px; }
+  pre { white-space: pre-wrap; }
+</style>
+</head>
+<body>
+
+<h1>Testes</h1>
+<pre id="saida">Rodando…</pre>
+
+<!-- Mesma ordem de carga do index.html. -->
+<script src="js/datas.js"></script>
+
+<script src="testes/assert.js"></script>
+
+<!-- Um <script> por arquivo em testes/casos/, na ordem em que forem criados. -->
+<script src="testes/casos/datas.test.js"></script>
+
+<script>
+  (function () {
+    var r = assert.relatorio();
+    var saida = document.getElementById('saida');
+    if (r.falhas.length) {
+      var texto = 'FALHAS (' + r.falhas.length + ' de ' + r.total + '):\n';
+      r.falhas.forEach(function (f) { texto += '  ✗ ' + f + '\n'; });
+      saida.textContent = texto;
+    } else {
+      saida.textContent = 'OK — ' + r.total + ' asserções.';
+    }
+  })();
+</script>
+
+</body>
+</html>

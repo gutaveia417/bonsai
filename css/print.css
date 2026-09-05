@@ -1,0 +1,12 @@
+@page {
+  size: A4;
+  margin: 15mm;
+}
+
+#abas {
+  display: none;
+}
+
+body {
+  padding-bottom: 0;
+}
