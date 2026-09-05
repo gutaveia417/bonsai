@@ -101,9 +101,14 @@ Bonsai.svg = (function () {
   // 1. cincoPartes — as cinco partes julgadas, rotuladas sobre o desenho.
   // -----------------------------------------------------------------
   function cincoPartes() {
+    // Fix round 1 (R24): o rótulo "conicidade" e sua nota estouravam a
+    // borda direita do viewBox original (360 de largura). A correção é
+    // dupla: viewBox mais largo (400) e os três rótulos do lado direito
+    // (tronco, conicidade, ramificação) ancorados com text-anchor "end"
+    // perto da borda, crescendo para a esquerda em vez de para fora dela.
     var p = [];
-    p.push(abrirSvg('0 0 360 340', 'As cinco partes de um bonsai: nebari, conicidade, tronco, ramificação e copa'));
-    p.push(cabecalho(180, 'As cinco partes julgadas'));
+    p.push(abrirSvg('0 0 400 340', 'As cinco partes de um bonsai: nebari, conicidade, tronco, ramificação e copa'));
+    p.push(cabecalho(200, 'As cinco partes julgadas'));
 
     // Vaso (contexto) e linha do substrato.
     p.push(poligono('100,300 220,300 233,330 87,330', { cor: '#000', largura: 1.5 }));
@@ -138,15 +143,15 @@ Bonsai.svg = (function () {
     p.push(apontar(46, 316, 132, 302));
     p.push(texto(20, 316, 'nebari', { tamanho: 13, negrito: true }));
 
-    p.push(apontar(300, 266, 178, 262));
-    p.push(texto(304, 270, 'tronco', { tamanho: 13, negrito: true }));
+    p.push(apontar(350, 266, 178, 262));
+    p.push(texto(380, 270, 'tronco', { ancora: 'end', tamanho: 13, negrito: true }));
 
-    p.push(apontar(300, 205, 184, 220));
-    p.push(texto(304, 209, 'conicidade', { tamanho: 13, negrito: true }));
-    p.push(texto(304, 224, '(base larga → topo fino)', { tamanho: 9 }));
+    p.push(apontar(350, 205, 184, 220));
+    p.push(texto(380, 209, 'conicidade', { ancora: 'end', tamanho: 13, negrito: true }));
+    p.push(texto(380, 224, '(base larga → topo fino)', { ancora: 'end', tamanho: 9 }));
 
-    p.push(apontar(272, 118, 234, 168));
-    p.push(texto(276, 122, 'ramificação', { tamanho: 13, negrito: true }));
+    p.push(apontar(346, 118, 234, 168));
+    p.push(texto(380, 122, 'ramificação', { ancora: 'end', tamanho: 13, negrito: true }));
 
     p.push(apontar(40, 66, 140, 108));
     p.push(texto(14, 66, 'copa', { tamanho: 13, negrito: true }));
@@ -159,60 +164,62 @@ Bonsai.svg = (function () {
   // 2. corteCerto — três cortes do mesmo galho e o que cada um vira.
   // -----------------------------------------------------------------
   function corteCerto() {
+    // Fix round 1 (R24): o layout original espalhava as anotações das
+    // colunas 2 e 3 para o centro do desenho, onde colidiam uma com a
+    // outra. Agora cada coluna tem uma faixa horizontal própria — texto
+    // de processo em cima, texto de resultado embaixo, sempre com
+    // text-anchor "middle" centrado na própria coluna — e nada cruza para
+    // a faixa da coluna vizinha.
     var p = [];
-    p.push(abrirSvg('0 0 480 260', 'Três jeitos de cortar um galho: corte certo, deixando toco, e rente demais'));
-    p.push(cabecalho(240, 'O mesmo galho, cortado de três jeitos'));
+    p.push(abrirSvg('0 0 520 300', 'Três jeitos de cortar um galho: corte certo, deixando toco, e rente demais'));
+    p.push(texto(260, 16, 'O mesmo galho, cortado de três jeitos', { ancora: 'middle', tamanho: 13, negrito: true }));
 
     var colunas = [
-      { x: 80, titulo: 'certo' },
-      { x: 240, titulo: 'deixa toco' },
-      { x: 400, titulo: 'rente demais' }
+      { x: 90, titulo: 'certo' },
+      { x: 260, titulo: 'deixa toco' },
+      { x: 430, titulo: 'rente demais' }
     ];
     colunas.forEach(function (col) {
-      p.push(texto(col.x, 240, col.titulo, { ancora: 'middle', tamanho: 12, negrito: true }));
+      p.push(texto(col.x, 282, col.titulo, { ancora: 'middle', tamanho: 12, negrito: true }));
     });
 
     // Coluna 1 — corte certo: rente à crista do colar, ângulo leve.
-    // Colar do galho (o inchaço onde o galho encontra o tronco).
-    var x1 = 80;
-    p.push(linha(x1, 36, x1, 200, { largura: 14 })); // tronco
-    p.push(circulo(x1 + 7, 108, 11, { fill: '#fff', largura: 1.6 })); // colar
-    p.push(linha(x1 + 17, 100, x1 + 9, 118, { largura: 2.4 })); // corte em ângulo, rente à crista
-    p.push(texto(x1 + 24, 105, 'colar', { tamanho: 9 }));
-    p.push(apontar(x1 - 30, 80, x1 + 12, 100));
-    p.push(texto(x1 - 66, 84, 'corta rente à crista,', { tamanho: 9 }));
-    p.push(texto(x1 - 66, 95, 'ângulo leve', { tamanho: 9 }));
+    var x1 = 90;
+    p.push(texto(x1, 38, 'corta rente à crista,', { ancora: 'middle', tamanho: 9 }));
+    p.push(texto(x1, 50, 'ângulo leve', { ancora: 'middle', tamanho: 9 }));
+    p.push(linha(x1, 64, x1, 214, { largura: 14 })); // tronco
+    p.push(circulo(x1 + 7, 130, 11, { fill: '#fff', largura: 1.6 })); // colar
+    p.push(linha(x1 + 17, 122, x1 + 9, 140, { largura: 2.4 })); // corte em ângulo, rente à crista
+    p.push(texto(x1 + 34, 128, 'colar', { tamanho: 9 }));
     // Resultado: cicatriza — anel fechado.
-    p.push(circulo(x1 + 7, 165, 9, { largura: 1.6, tracejado: '2 2' }));
-    p.push(texto(x1 + 28, 168, 'fecha com casca nova', { tamanho: 9 }));
+    p.push(circulo(x1 + 7, 240, 9, { largura: 1.6, tracejado: '2 2' }));
+    p.push(texto(x1, 262, 'fecha com casca nova', { ancora: 'middle', tamanho: 9 }));
 
     // Coluna 2 — deixa toco: sobra um pedaço de galho morto além do colar.
-    var x2 = 240;
-    p.push(linha(x2, 36, x2, 200, { largura: 14 }));
-    p.push(circulo(x2 + 7, 108, 11, { fill: '#fff', largura: 1.6 })); // colar
-    p.push(linha(x2 + 12, 106, x2 + 46, 100, { largura: 8 })); // toco sobrando
-    p.push(linha(x2 + 46, 92, x2 + 46, 108, { largura: 2.4 })); // corte reto na ponta do toco
-    p.push(texto(x2 + 30, 88, 'toco', { tamanho: 9 }));
-    p.push(apontar(x2 + 90, 70, x2 + 47, 96));
-    p.push(texto(x2 + 60, 60, 'sobra grossa,', { tamanho: 9 }));
-    p.push(texto(x2 + 60, 71, 'colar não fecha', { tamanho: 9 }));
+    var x2 = 260;
+    p.push(texto(x2, 38, 'sobra grossa,', { ancora: 'middle', tamanho: 9 }));
+    p.push(texto(x2, 50, 'colar não fecha', { ancora: 'middle', tamanho: 9 }));
+    p.push(linha(x2, 64, x2, 214, { largura: 14 }));
+    p.push(circulo(x2 + 7, 130, 11, { fill: '#fff', largura: 1.6 })); // colar
+    p.push(linha(x2 + 12, 128, x2 + 46, 122, { largura: 8 })); // toco sobrando
+    p.push(linha(x2 + 46, 114, x2 + 46, 130, { largura: 2.4 })); // corte reto na ponta do toco
+    p.push(texto(x2 + 20, 110, 'toco', { tamanho: 9 }));
     // Resultado: toco apodrece por dentro — rabiscos internos (oco/podre).
-    p.push(circulo(x2 + 46, 160, 10, { largura: 1.6 }));
-    p.push(caminho('M' + (x2 + 40) + ',154 l5,5 l-5,5 l5,5 l5,-5 l-5,-5 l5,-5', { largura: 1 }));
-    p.push(texto(x2 + 62, 164, 'apodrece por dentro', { tamanho: 9 }));
+    p.push(circulo(x2 + 7, 240, 10, { largura: 1.6 }));
+    p.push(caminho('M' + (x2 + 1) + ',234 l5,5 l-5,5 l5,5 l5,-5 l-5,-5 l5,-5', { largura: 1 }));
+    p.push(texto(x2, 262, 'apodrece por dentro', { ancora: 'middle', tamanho: 9 }));
 
     // Coluna 3 — rente demais: o corte entra no próprio tronco.
-    var x3 = 400;
-    p.push(linha(x3, 36, x3, 200, { largura: 14 }));
+    var x3 = 430;
+    p.push(texto(x3, 38, 'corta a crista', { ancora: 'middle', tamanho: 9 }));
+    p.push(texto(x3, 50, 'do colar', { ancora: 'middle', tamanho: 9 }));
+    p.push(linha(x3, 64, x3, 214, { largura: 14 }));
     // Corte côncavo que morde o tronco (sem sobrar colar nenhum).
-    p.push(caminho('M' + (x3 - 8) + ',96 Q' + (x3 + 10) + ',110 ' + (x3 - 8) + ',122', { largura: 2.4 }));
-    p.push(apontar(x3 - 70, 90, x3 - 9, 108));
-    p.push(texto(x3 - 96, 74, 'corta a crista', { tamanho: 9 }));
-    p.push(texto(x3 - 96, 85, 'do colar', { tamanho: 9 }));
+    p.push(caminho('M' + (x3 - 8) + ',118 Q' + (x3 + 10) + ',132 ' + (x3 - 8) + ',144', { largura: 2.4 }));
     // Resultado: ferida aberta, oval, maior que o galho — não fecha.
-    p.push(circulo(x3 - 4, 162, 13, { largura: 1.6 }));
-    p.push(circulo(x3 - 4, 162, 6, { largura: 1, tracejado: '1 2' }));
-    p.push(texto(x3 + 18, 166, 'ferida não fecha', { tamanho: 9 }));
+    p.push(circulo(x3 + 3, 240, 13, { largura: 1.6 }));
+    p.push(circulo(x3 + 3, 240, 6, { largura: 1, tracejado: '1 2' }));
+    p.push(texto(x3, 262, 'ferida não fecha', { ancora: 'middle', tamanho: 9 }));
 
     p.push('</svg>');
     return p.join('');
@@ -275,9 +282,14 @@ Bonsai.svg = (function () {
   // 4. anguloArame — mesmo galho, arame em 45° / solto / apertado.
   // -----------------------------------------------------------------
   function anguloArame() {
+    // Fix round 1 (R24): as notas da coluna 3 ("ângulo íngreme —" / "morde
+    // a casca") estouravam a borda direita do viewBox de 480. Em vez de
+    // encurtar o texto, alarguei o viewBox para 540 — sobra espaço à
+    // direita da última coluna para essas duas linhas, sem apertar nada
+    // nas outras duas colunas.
     var p = [];
-    p.push(abrirSvg('0 0 480 240', 'O mesmo galho aramado de três jeitos: 45° correto, solto demais e apertado demais'));
-    p.push(cabecalho(240, 'Ângulo do arame no galho'));
+    p.push(abrirSvg('0 0 540 240', 'O mesmo galho aramado de três jeitos: 45° correto, solto demais e apertado demais'));
+    p.push(cabecalho(270, 'Ângulo do arame no galho'));
 
     // Volta de arame como um pequeno traço cruzando o galho num ângulo dado.
     function volta(cx, cy, comprimento, anguloGraus) {
@@ -335,8 +347,13 @@ Bonsai.svg = (function () {
   // corte que o primeiro transplante faz na pivotante.
   // -----------------------------------------------------------------
   function raizes() {
+    // Fix round 1 (R24): as duas notas de rodapé, cada uma numa linha só,
+    // eram largas o bastante para se sobreporem uma na outra bem no meio
+    // do desenho. Quebradas em duas linhas curtas cada, ficam contidas na
+    // própria metade — o desenho e as posições dos elementos continuam
+    // os mesmos.
     var p = [];
-    p.push(abrirSvg('0 0 400 260', 'Raiz pivotante mergulhando fundo, ao lado de raiz radial espalhada, com o corte do primeiro transplante'));
+    p.push(abrirSvg('0 0 400 274', 'Raiz pivotante mergulhando fundo, ao lado de raiz radial espalhada, com o corte do primeiro transplante'));
     p.push(cabecalho(200, 'Pivotante × radial'));
 
     // Linha do substrato.
@@ -351,7 +368,8 @@ Bonsai.svg = (function () {
     p.push(texto(10, 178, 'corte do', { tamanho: 9 }));
     p.push(texto(10, 189, 'transplante', { tamanho: 9 }));
     p.push(texto(100, 232, 'pivotante', { ancora: 'middle', tamanho: 13, negrito: true }));
-    p.push(texto(100, 246, '(mergulha fundo, difícil em vaso raso)', { ancora: 'middle', tamanho: 8 }));
+    p.push(texto(100, 246, '(mergulha fundo,', { ancora: 'middle', tamanho: 8 }));
+    p.push(texto(100, 258, 'difícil em vaso raso)', { ancora: 'middle', tamanho: 8 }));
 
     // --- Lado direito: raiz radial (espalha achatada perto da superfície). ---
     p.push(linha(290, 40, 290, 90, { largura: 10 }));
@@ -360,7 +378,8 @@ Bonsai.svg = (function () {
     });
     p.push(apontar(290, 60, 290, 92));
     p.push(texto(290, 232, 'radial', { ancora: 'middle', tamanho: 13, negrito: true }));
-    p.push(texto(290, 246, '(espalhada e achatada — o nebari que buscamos)', { ancora: 'middle', tamanho: 8 }));
+    p.push(texto(290, 246, '(espalhada e achatada —', { ancora: 'middle', tamanho: 8 }));
+    p.push(texto(290, 258, 'o nebari que buscamos)', { ancora: 'middle', tamanho: 8 }));
 
     p.push('</svg>');
     return p.join('');
@@ -371,9 +390,14 @@ Bonsai.svg = (function () {
   // (2–4 anos) / refino (contínuo), com o gatilho por medida marcado.
   // -----------------------------------------------------------------
   function linhaFases() {
+    // Fix round 1 (R24): a legenda do refino ("(contínuo, sem data para
+    // acabar)") estourava alguns pixels da borda direita do viewBox de
+    // 480. Não mexi em nenhum outro elemento (a proporção desigual das
+    // fases, o ponto único do decepe, o final aberto do refino) — só
+    // alarguei o viewBox para dar folga a essa última legenda.
     var p = [];
-    p.push(abrirSvg('0 0 480 220', 'Linha do tempo das quatro fases: engorda em anos, decepe num único dia, estrutura em anos, refino contínuo'));
-    p.push(cabecalho(240, 'As quatro fases não duram o mesmo tempo'));
+    p.push(abrirSvg('0 0 520 220', 'Linha do tempo das quatro fases: engorda em anos, decepe num único dia, estrutura em anos, refino contínuo'));
+    p.push(cabecalho(260, 'As quatro fases não duram o mesmo tempo'));
 
     var y = 110;
     // Engorda — segmento longo, seta grossa (anos).
@@ -414,33 +438,42 @@ Bonsai.svg = (function () {
   // "tronco-cilíndrico" (assets/fotos/creditos.json), sem foto livre.
   // -----------------------------------------------------------------
   function conicidadeVsCilindrico() {
+    // Fix round 1 (R24): as duas legendas de baixo, cada uma numa única
+    // linha longa, ficavam centradas perto demais uma da outra e colidiam
+    // no meio do desenho — exatamente o diagrama que mais importa acertar,
+    // porque é o único visual do conceito (sem foto livre disponível).
+    // Correção: viewBox bem mais largo, os dois troncos bem mais afastados,
+    // e cada legenda quebrada em duas linhas curtas em vez de uma longa —
+    // assim cada bloco de texto fica contido na própria metade do desenho.
     var p = [];
-    p.push(abrirSvg('0 0 360 260', 'Tronco cônico, com conicidade, ao lado de um tronco cilíndrico, sem conicidade'));
-    p.push(cabecalho(180, 'Conicidade × cilíndrico'));
+    p.push(abrirSvg('0 0 460 300', 'Tronco cônico, com conicidade, ao lado de um tronco cilíndrico, sem conicidade'));
+    p.push(cabecalho(230, 'Conicidade × cilíndrico'));
 
     // Linha do solo.
-    p.push(linha(20, 210, 340, 210, { largura: 1.2, cor: '#666' }));
+    p.push(linha(20, 210, 440, 210, { largura: 1.2, cor: '#666' }));
 
-    // --- Esquerda: tronco cônico (com conicidade). ---
-    p.push(poligono('95,210 155,210 138,60 112,60', { fill: '#fff', cor: '#000', largura: 2 }));
-    // Réguas de largura no topo e na base, para o contraste ficar explícito.
-    p.push(linha(88, 210, 88, 60, { largura: 0.8, cor: '#999', tracejado: '2 2' }));
-    p.push(texto(125, 234, 'cônico', { ancora: 'middle', tamanho: 13, negrito: true }));
-    p.push(texto(125, 248, '(com conicidade: base larga, topo fino)', { ancora: 'middle', tamanho: 8 }));
-    p.push(apontar(60, 200, 100, 205));
-    p.push(texto(20, 200, 'largo', { tamanho: 9 }));
-    p.push(apontar(60, 70, 118, 64));
-    p.push(texto(20, 70, 'fino', { tamanho: 9 }));
+    // --- Esquerda: tronco cônico (com conicidade). Centro em x=110. ---
+    p.push(poligono('80,210 140,210 120,60 100,60', { fill: '#fff', cor: '#000', largura: 2 }));
+    // Régua de largura ao lado, para o contraste ficar explícito.
+    p.push(linha(70, 210, 70, 60, { largura: 0.8, cor: '#999', tracejado: '2 2' }));
+    p.push(texto(110, 234, 'cônico', { ancora: 'middle', tamanho: 13, negrito: true }));
+    p.push(texto(110, 248, '(com conicidade:', { ancora: 'middle', tamanho: 8 }));
+    p.push(texto(110, 260, 'base larga, topo fino)', { ancora: 'middle', tamanho: 8 }));
+    p.push(apontar(30, 200, 82, 205));
+    p.push(texto(14, 200, 'largo', { tamanho: 9 }));
+    p.push(apontar(30, 70, 98, 64));
+    p.push(texto(14, 70, 'fino', { tamanho: 9 }));
 
-    // --- Direita: tronco cilíndrico (sem conicidade, como um poste). ---
-    p.push(poligono('215,210 275,210 275,60 215,60', { fill: '#fff', cor: '#000', largura: 2 }));
-    p.push(linha(280, 210, 280, 60, { largura: 0.8, cor: '#999', tracejado: '2 2' }));
-    p.push(texto(245, 234, 'cilíndrico', { ancora: 'middle', tamanho: 13, negrito: true }));
-    p.push(texto(245, 248, '(sem conicidade — mesma grossura do chão à copa)', { ancora: 'middle', tamanho: 8 }));
-    p.push(apontar(300, 200, 278, 205));
-    p.push(texto(304, 200, 'largo', { tamanho: 9 }));
-    p.push(apontar(300, 70, 278, 64));
-    p.push(texto(304, 70, 'largo', { tamanho: 9 }));
+    // --- Direita: tronco cilíndrico (sem conicidade, como um poste). Centro em x=350. ---
+    p.push(poligono('320,210 380,210 380,60 320,60', { fill: '#fff', cor: '#000', largura: 2 }));
+    p.push(linha(390, 210, 390, 60, { largura: 0.8, cor: '#999', tracejado: '2 2' }));
+    p.push(texto(350, 234, 'cilíndrico', { ancora: 'middle', tamanho: 13, negrito: true }));
+    p.push(texto(350, 248, '(sem conicidade:', { ancora: 'middle', tamanho: 8 }));
+    p.push(texto(350, 260, 'mesma grossura sempre)', { ancora: 'middle', tamanho: 8 }));
+    p.push(apontar(430, 200, 382, 205));
+    p.push(texto(446, 200, 'largo', { ancora: 'end', tamanho: 9 }));
+    p.push(apontar(430, 70, 382, 64));
+    p.push(texto(446, 70, 'largo', { ancora: 'end', tamanho: 9 }));
 
     p.push('</svg>');
     return p.join('');

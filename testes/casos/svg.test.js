@@ -126,3 +126,131 @@ assert.grupo('svg - nenhum diagrama lança exceção nem usa aleatoriedade perce
     assert.eq(b, c, d.id + ' 2ª e 3ª chamada iguais');
   });
 });
+
+// ===========================================================================
+// R24 — heurística de layout (fix round 1). A suíte acima só verifica
+// estrutura (viewBox, <title>, paleta, determinismo) — nenhuma dessas
+// asserções pega texto cortado na borda ou rótulos empilhados uns sobre os
+// outros, e foi exatamente essa a classe de defeito encontrada ao renderizar
+// os sete diagramas de verdade num navegador.
+//
+// A técnica: estimar a caixa ocupada por cada <text>/<tspan> a partir do
+// número de caracteres, do font-size e do text-anchor (sem precisar de DOM
+// nem de medir glifo de verdade — 0,6 é uma média grosseira de largura de
+// caractere, boa o bastante para pegar estouro de borda e sobreposição
+// grosseira, não para layout pixel-perfeito). Depois:
+//   1. nenhuma caixa pode passar da borda do viewBox (com folga de margem);
+//   2. dentro do mesmo diagrama, nenhuma caixa pode cruzar outra.
+// ===========================================================================
+var FATOR_LARGURA_GLIFO = 0.6; // média grosseira: largura de um caractere ≈ 0,6 × font-size
+var MARGEM_VIEWBOX = 3;
+
+function analisarViewBox(svg) {
+  var m = svg.match(/viewBox\s*=\s*"([^"]+)"/);
+  if (!m) return null;
+  var partes = m[1].trim().split(/\s+/).map(Number);
+  return { x: partes[0], y: partes[1], largura: partes[2], altura: partes[3] };
+}
+
+function atributosDe(strAttrs) {
+  var attrs = {};
+  var re = /([a-zA-Z_:][\w:-]*)\s*=\s*"([^"]*)"/g;
+  var m;
+  while ((m = re.exec(strAttrs))) attrs[m[1]] = m[2];
+  return attrs;
+}
+
+// Remove marcação interna (ex.: <tspan>) para sobrar só o texto visível,
+// usado apenas para medir comprimento de caracteres.
+function textoVisivel(html) {
+  return html.replace(/<[^>]+>/g, '');
+}
+
+function caixaDe(x, y, texto, tamanho, anchor) {
+  var largura = texto.length * tamanho * FATOR_LARGURA_GLIFO;
+  var x0, x1;
+  if (anchor === 'middle') { x0 = x - largura / 2; x1 = x + largura / 2; }
+  else if (anchor === 'end') { x0 = x - largura; x1 = x; }
+  else { x0 = x; x1 = x + largura; }
+  // Caixa vertical aproximada em torno da linha de base (y): a maior parte
+  // da altura do glifo fica acima dela, com uma pequena descida abaixo.
+  var y0 = y - tamanho * 0.8;
+  var y1 = y + tamanho * 0.3;
+  return { x0: x0, x1: x1, y0: y0, y1: y1, texto: texto };
+}
+
+// Devolve uma caixa estimada por <text> (ou por <tspan> com x/y/dy próprio
+// dentro dele) de um SVG.
+function caixasDeTexto(svg) {
+  var caixas = [];
+  var reText = /<text\b([^>]*)>([\s\S]*?)<\/text>/g;
+  var mt;
+  while ((mt = reText.exec(svg))) {
+    var attrsPai = atributosDe(mt[1]);
+    var conteudoPai = mt[2];
+    var tamanhoPai = parseFloat(attrsPai['font-size'] || '12');
+    var anchorPai = attrsPai['text-anchor'] || 'start';
+    var xPai = parseFloat(attrsPai.x || '0');
+    var yPai = parseFloat(attrsPai.y || '0');
+
+    var reTspan = /<tspan\b([^>]*)>([\s\S]*?)<\/tspan>/g;
+    var achouTspan = false;
+    var mts;
+    while ((mts = reTspan.exec(conteudoPai))) {
+      achouTspan = true;
+      var attrsFilho = atributosDe(mts[1]);
+      var texto = textoVisivel(mts[2]);
+      if (!texto.trim()) continue;
+      var tamanho = attrsFilho['font-size'] ? parseFloat(attrsFilho['font-size']) : tamanhoPai;
+      var anchor = attrsFilho['text-anchor'] || anchorPai;
+      var x = attrsFilho.x !== undefined ? parseFloat(attrsFilho.x) : xPai;
+      var y = attrsFilho.y !== undefined
+        ? parseFloat(attrsFilho.y)
+        : yPai + (attrsFilho.dy !== undefined ? parseFloat(attrsFilho.dy) : 0);
+      caixas.push(caixaDe(x, y, texto, tamanho, anchor));
+    }
+    if (!achouTspan) {
+      var textoSimples = textoVisivel(conteudoPai);
+      if (textoSimples.trim().length > 0) {
+        caixas.push(caixaDe(xPai, yPai, textoSimples, tamanhoPai, anchorPai));
+      }
+    }
+  }
+  return caixas;
+}
+
+function seSobrepoe(a, b) {
+  return a.x0 < b.x1 && a.x1 > b.x0 && a.y0 < b.y1 && a.y1 > b.y0;
+}
+
+assert.grupo('svg - R24: nenhum rótulo estoura o viewBox', function () {
+  Bonsai.svg.LISTA.forEach(function (d) {
+    var s = Bonsai.svg[d.fn]();
+    var vb = analisarViewBox(s);
+    assert.ok(vb, d.id + ' tem viewBox parseável');
+    if (!vb) return;
+
+    var minX = vb.x - MARGEM_VIEWBOX;
+    var maxX = vb.x + vb.largura + MARGEM_VIEWBOX;
+
+    caixasDeTexto(s).forEach(function (c) {
+      assert.ok(c.x0 >= minX,
+        d.id + ': rótulo "' + c.texto + '" estoura a borda esquerda (x0≈' + c.x0.toFixed(1) + ', viewBox começa em ' + vb.x + ')');
+      assert.ok(c.x1 <= maxX,
+        d.id + ': rótulo "' + c.texto + '" estoura a borda direita (x1≈' + c.x1.toFixed(1) + ', viewBox termina em ' + (vb.x + vb.largura) + ')');
+    });
+  });
+});
+
+assert.grupo('svg - R24: nenhum rótulo se sobrepõe a outro do mesmo diagrama', function () {
+  Bonsai.svg.LISTA.forEach(function (d) {
+    var s = Bonsai.svg[d.fn]();
+    var caixas = caixasDeTexto(s);
+    for (var i = 0; i < caixas.length; i++) {
+      for (var j = i + 1; j < caixas.length; j++) {
+        assert.eq(seSobrepoe(caixas[i], caixas[j]), false,
+          d.id + ': rótulos se sobrepõem — "' + caixas[i].texto + '" × "' + caixas[j].texto + '"');
+      }
+    }
+  });
+});
