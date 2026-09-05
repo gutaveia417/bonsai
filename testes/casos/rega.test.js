@@ -78,7 +78,11 @@ assert.grupo('rega — invariantes', function () {
     ['2026-09-05', '2027-01-15', '2026-12-25', '2026-02-01'].forEach(function (hoje) {
       var lista = Bonsai.rega.checklist(db, hoje);
       lista.forEach(function (linha) {
-        var textoCompleto = linha.perfil.instrucao + ' ' + linha.perfil.teste + ' ' + (linha.perfil.nota || '');
+        // Cobre a linha inteira do checklist como o usuário a lê, inclusive
+        // o aviso de estação — ele faz parte da mesma linha e uma edição
+        // futura poderia introduzir ali a ordem que o resto do texto evita.
+        var textoCompleto = linha.perfil.instrucao + ' ' + linha.perfil.teste + ' ' +
+          (linha.perfil.nota || '') + ' ' + (linha.avisoEstacao || '');
         // "regue" (imperativo positivo, "regue agora") é a instrução
         // proibida — o checklist nunca manda regar hoje. "não regue" /
         // "nunca regue" (aviso negado, ex.: a nota da azaleia "não regue

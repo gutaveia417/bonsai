@@ -17,7 +17,7 @@ Bonsai.rega = (function () {
     'sempre-umido': {
       rotulo: 'Sempre úmido',
       instrucao: 'Não deixar secar — o substrato deve continuar úmido ao toque o tempo todo.',
-      teste: 'Encoste o dedo na superfície do substrato: seco ao toque é sinal de atraso, não uma data de calendário.'
+      teste: 'Enfie o dedo 2–3 cm no substrato: começando a secar nesse ponto já é o gatilho para regar — não espere secar mais que isso, e não confie só na superfície, que seca bem antes da zona de raiz.'
     },
     'secar-entre-regas': {
       rotulo: 'Secar entre regas',
