@@ -200,7 +200,7 @@ explica por quê. Sem essa separação seria preciso inventar uma quinta fase fa
 | perfil | instrução |
 |---|---|
 | `sempre-umido` | não deixar secar |
-| `secar-entre-regas` | deixar a superfície secar antes de regar de novo |
+| `secar-entre-regas` | deixar secar entre uma rega e outra — conferir a 2–3 cm, não pela superfície |
 | `secar-completo` | deixar secar por completo |
 | `nem-secar-nem-encharcar` | meio-termo, sem extremos |
 | `umido-vigiado` | **teste do dedo a 2–3 cm antes de cada rega, sem exceção.** Nunca ressecar por completo, nunca regar por rotina |
@@ -208,6 +208,25 @@ explica por quê. Sem essa separação seria preciso inventar uma quinta fase fa
 `umido-vigiado` existe para planta cuja causa de dano não foi confirmada e
 inclui excesso de água entre as hipóteses. Ele nunca é o padrão de uma espécie —
 é sempre um override de árvore.
+
+**Nenhum texto de rega ancora na superfície.** O teste do dedo é a 2–3 cm em
+todos os cinco perfis, sem exceção — a seção 9, item 8 fixa isso e a seção 11
+lista "rega superficial" entre os dez erros. O que distingue um perfil do outro
+é **o que o resultado a 2–3 cm significa**, nunca onde o dedo entra:
+
+| perfil | a 2–3 cm, o gatilho é |
+|---|---|
+| `sempre-umido` | *começando* a secar |
+| `nem-secar-nem-encharcar` | secando |
+| `secar-entre-regas` | seco |
+| `secar-completo` | seco até essa profundidade, sem pressa |
+| `umido-vigiado` | o teste manda, sempre, sem rotina |
+
+Superfície de substrato em sol de Naviraí seca em cerca de uma hora enquanto a
+zona de raiz continua saturada. Qualquer frase que sugira julgar por cima
+produz falso positivo e empurra para o excesso — inclusive uma frase de resumo
+cujo texto operativo logo abaixo esteja correto, porque o usuário lê isto no
+quintal, com pressa e uma mão só.
 
 ### 4.6.1 `regaOverride` — perfil amarrado ao estado
 
