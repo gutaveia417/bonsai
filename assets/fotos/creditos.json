@@ -1,0 +1,207 @@
+{
+  "_leia_me": "Um registro por slot de imagem. 'origem' governa como o app renderiza: 'livre' mostra crédito e licença no rodapé da legenda; 'pendente' mostra caixa tracejada com botão de câmera; 'ia' mostraria a tarja 'ilustração — não é foto', e hoje não há nenhuma. A legenda sempre diz O QUE OLHAR, não só o que é.",
+
+  "ficus-formado": {
+    "arquivo": "ficus-formado.jpg",
+    "origem": "livre",
+    "secaoGuia": "especies",
+    "titulo": "Ficus microcarpa formado",
+    "legenda": "Olhe o nebari largo e as raízes aéreas descendo do tronco, e como a copa é larga e achatada em vez de arredondada. É um Ficus microcarpa de museu, em treinamento há décadas: é para onde os seus três Ficus panda podem ir, com muitos anos e nenhuma pressa.",
+    "titulo_original": "Chinese Banyan - National Bonsai & Penjing Museum - Washington, D.C. - Sarah Stierch.jpg",
+    "autor": "Sarah Stierch",
+    "licenca": "CC BY 4.0",
+    "fonte": "https://commons.wikimedia.org/wiki/File:Chinese_Banyan_-_National_Bonsai_%26_Penjing_Museum_-_Washington,_D.C._-_Sarah_Stierch.jpg",
+    "recortada": false
+  },
+
+  "jabuticaba-formada": {
+    "arquivo": "jabuticaba-formada.jpg",
+    "origem": "livre",
+    "secaoGuia": "especies",
+    "titulo": "Jabuticaba formada",
+    "legenda": "Olhe a conicidade: a base é visivelmente mais grossa que o topo, e a copa é densa e compacta. Compare com a sua, que ainda é um tronco fino com bifurcação em Y alta. O que separa uma da outra é o decepe — e o decepe só acontece quando a base chegar aos 8 cm.",
+    "titulo_original": "Jaboticaba, United States National Bonsai & Penjing Museum.jpg",
+    "autor": "APK",
+    "licenca": "CC BY 4.0",
+    "fonte": "https://commons.wikimedia.org/wiki/File:Jaboticaba,_United_States_National_Bonsai_%26_Penjing_Museum.jpg",
+    "recortada": false
+  },
+
+  "serissa-formada": {
+    "arquivo": "serissa-formada.jpg",
+    "origem": "livre",
+    "secaoGuia": "especies",
+    "titulo": "Serissa formada",
+    "legenda": "Olhe a finura dos ramos e o tamanho da folha em relação à árvore inteira. Serissa ramifica muito e aceita copa densa, o que a torna boa para refino. Este é um plantio de vários troncos, em treinamento desde 1951.",
+    "titulo_original": "Japanese Boxthorn, 1951-2007.jpg",
+    "autor": "Ragesoss",
+    "licenca": "CC BY-SA 4.0",
+    "fonte": "https://commons.wikimedia.org/wiki/File:Japanese_Boxthorn,_1951-2007.jpg",
+    "recortada": false
+  },
+
+  "primavera-formada": {
+    "arquivo": "primavera-formada.jpg",
+    "origem": "livre",
+    "secaoGuia": "especies",
+    "titulo": "Primavera formada",
+    "legenda": "Olhe o movimento do tronco e como ele é desproporcionalmente grosso para o tamanho da árvore — primavera engrossa rápido, e é por isso que ela é boa para aprender. As partes coloridas são brácteas, não pétalas: a flor de verdade é a coisinha branca no meio delas.",
+    "titulo_original": "Bougainvillea Bonsai.jpg",
+    "autor": "Joanna",
+    "licenca": "CC BY 2.0",
+    "fonte": "https://commons.wikimedia.org/wiki/File:Bougainvillea_Bonsai.jpg",
+    "recortada": false
+  },
+
+  "azaleia-formada": {
+    "arquivo": "azaleia-formada.jpg",
+    "origem": "livre",
+    "secaoGuia": "especies",
+    "titulo": "Azaleia formada, em floração",
+    "legenda": "Olhe a casca escamada do tronco e a base larga, e repare que a flor cobre a estrutura inteira, não só as pontas dos ramos. É exatamente por isso que azaleia se poda depois da floração: os botões do ano seguinte se formam logo em seguida, e podar antes joga o próximo ano fora.",
+    "titulo_original": "Satsuki azalea, United States National Bonsai & Penjing Museum.jpg",
+    "autor": "APK",
+    "licenca": "CC BY 4.0",
+    "fonte": "https://commons.wikimedia.org/wiki/File:Satsuki_azalea,_United_States_National_Bonsai_%26_Penjing_Museum.jpg",
+    "recortada": false
+  },
+
+  "nebari-bom": {
+    "arquivo": "nebari-bom.jpg",
+    "origem": "livre",
+    "secaoGuia": "cinco-partes",
+    "titulo": "Nebari bom",
+    "legenda": "Olhe como as raízes saem do tronco para vários lados, espalhadas e mais ou menos no mesmo nível, formando um pé largo que ancora a árvore visualmente. Nenhuma raiz cruza por cima da outra e nenhuma sai sozinha muito acima das demais. É isso que se chama nebari bom — e é quase irreversível, por isso se resolve cedo.",
+    "titulo_original": "Japanese Zelkova bonsai 16, October 10, 2008.jpg",
+    "autor": "Sage Ross",
+    "licenca": "CC BY-SA 3.0",
+    "fonte": "https://commons.wikimedia.org/wiki/File:Japanese_Zelkova_bonsai_16,_October_10,_2008.jpg",
+    "recortada": true,
+    "nota_recorte": "Recorte da base da árvore. Obra derivada sob CC BY-SA 3.0."
+  },
+
+  "nebari-ruim": {
+    "arquivo": null,
+    "origem": "pendente",
+    "secaoGuia": "cinco-partes",
+    "titulo": "Nebari ruim",
+    "legenda": "Olhe se as raízes saem todas empilhadas de um ponto só, como um pescoço, ou se alguma cruza por cima de outra. É o oposto do nebari bom, e não se conserta depois sem cirurgia de raiz.",
+    "motivo_pendente": "Não existe foto livre boa. Ninguém fotografa o próprio nebari ruim de propósito. Fotografe uma planta de viveiro — a maioria tem exatamente esse defeito."
+  },
+
+  "conicidade-com": {
+    "arquivo": "conicidade-com.jpg",
+    "origem": "livre",
+    "secaoGuia": "cinco-partes",
+    "titulo": "Tronco com conicidade",
+    "legenda": "Ignore as flores e olhe só o tronco: ele sai grosso do substrato e vai afinando até a copa, sem degrau brusco. Essa redução contínua é a conicidade, e é ela que faz uma árvore de 30 cm parecer uma árvore de 30 metros.",
+    "titulo_original": "Flowering Bougainvillea Bonsai.jpg",
+    "autor": "Thebestbonsai",
+    "licenca": "CC BY-SA 4.0",
+    "fonte": "https://commons.wikimedia.org/wiki/File:Flowering_Bougainvillea_Bonsai.jpg",
+    "recortada": false
+  },
+
+  "tronco-cilindrico": {
+    "arquivo": null,
+    "origem": "svg",
+    "svgFn": "conicidadeVsCilindrico",
+    "secaoGuia": "cinco-partes",
+    "titulo": "Tronco cilíndrico",
+    "legenda": "Olhe um tronco que sobe com a mesma grossura do solo até a copa, como um poste. É o defeito mais comum de planta que cresceu solta e nunca foi decepada — e é o que o decepe existe para corrigir.",
+    "motivo_pendente": "Sem foto livre. Coberto por diagrama desenhado, onde a comparação lado a lado fica mais clara do que em foto."
+  },
+
+  "decepe-recem-feito": {
+    "arquivo": null,
+    "origem": "pendente",
+    "secaoGuia": "quatro-fases",
+    "titulo": "Decepe recém-feito",
+    "legenda": "Olhe a altura do corte em relação ao vaso e o ângulo leve, para a água escorrer para fora em vez de empoçar. Olhe também o que ficou abaixo do corte: é dali que vem a árvore inteira daqui para frente.",
+    "motivo_pendente": "Sem foto livre. Fotografe o seu, quando a jabuticaba chegar aos 8 cm."
+  },
+
+  "decepe-anos-depois": {
+    "arquivo": "decepe-anos-depois.jpg",
+    "origem": "livre",
+    "secaoGuia": "quatro-fases",
+    "titulo": "Um corte fechado, anos depois",
+    "legenda": "Olhe os dois círculos no tronco: eram cortes de galho, e a árvore fechou por cima deles de fora para dentro, formando um anel de calo. É assim que a cicatriz de um decepe desaparece com os anos, e é por isso que um corte bem feito, no lugar certo, deixa de ser um problema. ATENÇÃO: esta não é uma árvore de bonsai, é um plátano de rua — está aqui só para mostrar como o corte fecha.",
+    "titulo_original": "Wound healing. Callus growth. Acer pseudoplatanus. Long Preston. Yorkshire.jpg",
+    "autor": "Rosser1954",
+    "licenca": "CC BY 4.0",
+    "fonte": "https://commons.wikimedia.org/wiki/File:Wound_healing._Callus_growth._Acer_pseudoplatanus._Long_Preston._Yorkshire.jpg",
+    "recortada": false
+  },
+
+  "arame-aplicado": {
+    "arquivo": "arame-aplicado.jpg",
+    "origem": "livre",
+    "secaoGuia": "aramacao",
+    "titulo": "Arame aplicado corretamente",
+    "legenda": "Olhe o espaçamento entre as voltas, regular do início ao fim, e o ângulo perto de 45° em relação ao tronco. O arame encosta na casca sem apertar. Voltas muito juntas prendem demais, muito abertas não seguram nada.",
+    "titulo_original": "Ginkgo bonsai D160830 wiring.jpg",
+    "autor": "Tangopaso",
+    "licenca": "Public domain",
+    "fonte": "https://commons.wikimedia.org/wiki/File:Ginkgo_bonsai_D160830_wiring.jpg",
+    "recortada": false
+  },
+
+  "arame-encravado": {
+    "arquivo": "arame-encravado.jpg",
+    "origem": "livre",
+    "secaoGuia": "aramacao",
+    "titulo": "Arame encravado na casca",
+    "legenda": "Olhe as cristas em espiral ao longo do ramo: a casca inchou POR CIMA do arame e engoliu ele. Nesta foto o arame já foi removido — a marca é o que sobrou, e ela é permanente. Isso leva semanas, não meses, na estação de crescimento. É a razão inteira de conferir o arame todo mês.",
+    "titulo_original": "Pine bonsai with deep wire scars.jpg",
+    "autor": "Ragesoss",
+    "licenca": "CC BY-SA 3.0",
+    "fonte": "https://commons.wikimedia.org/wiki/File:Pine_bonsai_with_deep_wire_scars.jpg",
+    "recortada": false
+  },
+
+  "raiz-circulante": {
+    "arquivo": null,
+    "origem": "pendente",
+    "secaoGuia": "raiz-nebari",
+    "titulo": "Raiz circulante num torrão desenrolado",
+    "legenda": "Olhe se as raízes grossas fazem a volta seguindo a parede do vaso, formando um novelo. Elas continuam engrossando e acabam estrangulando uma à outra e ao próprio tronco. É o que se corta no transplante.",
+    "motivo_pendente": "Não achei foto livre útil — as que existem são de raiz nua, sem o padrão circular. Fotografe no próximo transplante, com o torrão desenrolado sobre um jornal, antes de podar."
+  },
+
+  "substrato-bonsai": {
+    "arquivo": "substrato-bonsai.jpg",
+    "origem": "livre",
+    "secaoGuia": "substrato",
+    "titulo": "Substrato de bonsai",
+    "legenda": "Olhe os grãos separados, todos mais ou menos do mesmo tamanho, com vazios de ar visíveis entre eles. Os grãos claros estão secos e os escuros molhados: o mesmo material segura água DENTRO do grão e ar ENTRE os grãos. É essa estrutura, e não a riqueza da terra, que faz raiz de bonsai.",
+    "titulo_original": "Akadama dry and wet.JPG",
+    "autor": "Abrahami",
+    "licenca": "CC BY-SA 3.0",
+    "fonte": "https://commons.wikimedia.org/wiki/File:Akadama_dry_and_wet.JPG",
+    "recortada": false
+  },
+
+  "terra-compactada": {
+    "arquivo": null,
+    "origem": "pendente",
+    "secaoGuia": "substrato",
+    "titulo": "Terra de jardim compactada",
+    "legenda": "Olhe a ausência de grão: terra de jardim molhada vira um bloco único, sem vazio de ar nenhum. A raiz não respira, a água não desce, e o vaso demora dias para secar. É o erro nº 3 da lista dos 10.",
+    "motivo_pendente": "Sem foto livre. Esta é a mais fácil de todas para você tirar: um punhado de terra do quintal ao lado de um punhado do seu substrato, na mesma luz, no mesmo prato."
+  },
+
+  "ramificacao-fina": {
+    "arquivo": "ramificacao-fina.jpg",
+    "origem": "livre",
+    "secaoGuia": "cinco-partes",
+    "titulo": "Ramificação fina",
+    "legenda": "Olhe os ramos escuros e finos aparecendo por trás da folhagem rala de outono: cada ramo se divide em dois, e cada um desses em dois de novo, ficando mais fino a cada divisão. Isso é ramificação. Ela não se compra e não se apressa — sai de anos de clip-and-grow.",
+    "titulo_original": "Hokidachi.jpg",
+    "autor": "Nejikan",
+    "licenca": "CC BY-SA 4.0",
+    "fonte": "https://commons.wikimedia.org/wiki/File:Hokidachi.jpg",
+    "recortada": true,
+    "nota_recorte": "Recorte da copa. Obra derivada sob CC BY-SA 4.0."
+  }
+}
