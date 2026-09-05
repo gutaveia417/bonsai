@@ -291,6 +291,29 @@ Três funções puras, testáveis isoladamente.
 Cada item: `{ acao, texto, porque, guiaAncora }`. A ficha mostra três blocos
 coloridos, e cada item leva a uma seção do guia.
 
+**Valores de `acao`.** A tela usa esse campo para escolher ícone e agrupar, então
+ele precisa nomear o ato com precisão — nunca o oposto dele, nunca dois atos
+diferentes com o mesmo nome:
+
+| `acao` | o ato |
+|---|---|
+| `podar-copa` | cortar a copa ou o líder; ⛔ na engorda |
+| `podar` | poda de galho em geral |
+| `podar-raiz` | cortar raiz — só acontece com a planta fora do vaso |
+| `decepar` | o decepe em si |
+| `decepar-precoce` | decepar antes de o tronco atingir o alvo |
+| `aramar` | aplicar arame |
+| `conferir-arame` | inspecionar arame já aplicado |
+| `adubar` · `transplantar` · `medir` · `regar` | autoexplicativos |
+| `mudar-lugar` | mover a planta de posição |
+| `manter-sombra` | deixar onde está, à sombra — o oposto de `mudar-lugar` |
+| `observar` · `esperar` | não fazer nada e acompanhar |
+| `definir-fase` | lacuna de dado, não ato sobre a planta |
+
+A lista cresce quando um item novo não couber em nenhum valor existente. Forçar
+um valor que quase serve é pior que criar um: `definir-fase` e `manter-sombra`
+nasceram exatamente assim.
+
 **Por fase:**
 
 | fase | ✅ permitido | ⛔ proibido | ⚠️ atenção |
