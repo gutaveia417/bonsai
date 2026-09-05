@@ -70,10 +70,22 @@ Raiz em localStorage:
   arvores: [...],
   eventos: [...],
   tarefas: [...],
-  slotsFoto: {...},
   alertasDispensados: [...]   // { alertaId, ateData }
 }
 ```
+
+**Sete chaves na raiz, exatamente estas.** `slotsFoto` **não** vive no banco:
+`assets/fotos/creditos.json` é a fonte de verdade dos slots de imagem, e manter
+as duas listas garantiria que divergissem na primeira alteração. Fotos que o
+usuário tirar ficam no IndexedDB, indexadas pelo próprio `slotId` — não é
+preciso registro no banco para saber quais existem.
+
+Os campos `somenteLeitura` e `motivo` são **derivados**: `carregar()` os anexa
+ao objeto em memória e `salvar()` decide por eles, mas ambos são removidos
+antes de gravar em disco ou exportar. Backup e localStorage têm as sete chaves
+acima e nada mais. A trava é recalculada a partir do `schemaVersion` em toda
+entrada, nunca lida do arquivo — senão um backup feito durante uma corrupção
+nasceria permanentemente não-gravável.
 
 ### 4.1 `especies` — o perfil que ensina
 
