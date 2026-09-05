@@ -332,10 +332,46 @@ nasceram exatamente assim.
 | `recuperacao` | ⛔ adubar, podar, aramar, transplantar. ✅ manter à sombra sem mudar de lugar, regar, esperar. ⚠️ só voltar a mexer depois de broto novo |
 | `pos-transplante` | ⛔ adubar até `estadoAte`, podar, **transplantar**. ⚠️ sombra por 3–4 semanas. ✅ regar |
 
-**Toda linha de estado precisa de pelo menos um ✅.** Uma tela que lista quatro
-proibições e nenhuma permissão diz a um iniciante que não há nada a fazer por
-uma planta viva — e contradiz o checklist de rega, que vai listá-la na mesma
-hora. Regar é quase sempre a permissão que sobra.
+### Cuidado básico — sempre ✅, em todo estado, com ou sem fase
+
+Três ações são **sempre permitidas**, em qualquer fase (inclusive `fase: null`) e
+em qualquer estado, sem exceção:
+
+| ação | por quê |
+|---|---|
+| `regar` | conforme o perfil efetivo da espécie. Planta viva bebe |
+| `observar` | olhar, anotar, registrar foto. Não toca na planta |
+| `medir` | fita no tronco. Não toca na planta, e é o dado que governa a troca de fase |
+
+O que os estados restritivos bloqueiam é **intervenção** — adubo, poda, arame,
+transplante, mudança de lugar. Nunca o cuidado básico.
+
+Uma tela que lista quatro proibições e nenhuma permissão diz a um iniciante que
+não há nada a fazer por uma planta viva, e contradiz o checklist de rega, que
+vai listá-la na mesma hora. O usuário é leigo: diante de duas telas do mesmo app
+em desacordo, ele não tem como saber qual obedecer.
+
+Cuidado com a herança: essas três precisam vir de uma lista própria, **não** de
+herança da fase. Uma árvore com `fase: null` não tem de quem herdar, e foi
+exatamente assim que a Serissa e a Azaleia ficaram sem `medir`.
+
+### Estado restritivo nega por omissão
+
+`adaptacao`, `recuperacao` e `pos-transplante` são **estados restritivos**.
+Neles vale a regra invertida:
+
+> **Uma ✅ da fase que o estado não re-autoriza explicitamente vira ⚠️, nunca
+> permanece ✅.**
+
+O padrão anterior era o oposto — ação não mencionada na tabela do estado herdava
+o verde da fase — e foi por essa fresta que "transplantar" apareceu liberado
+numa árvore transplantada quatro dias antes. Tapar o caso do transplante não
+fecha a classe; inverter o padrão fecha.
+
+Itens já ⛔ ou ⚠️ na fase não mudam. Só a promoção silenciosa a ✅ é que morre.
+O texto do ⚠️ diz qual estado rebaixou a ação e o que checar antes.
+
+`saudavel` não é restritivo: nele a fase manda.
 
 **`pos-transplante` proíbe transplantar.** Faltava na primeira redação desta
 tabela, por descuido: as linhas `adaptacao` e `recuperacao` proibiam, e esta
