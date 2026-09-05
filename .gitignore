@@ -1,0 +1,25 @@
+# Originais pesados de imagem — nunca versionados.
+# Aqui ficam os downloads brutos e as gerações antes de otimizar.
+assets/fotos/originais/
+
+# Formatos grandes / de edição
+*.psd
+*.tif
+*.tiff
+*.raw
+*.heic
+*.zip
+
+# Sistema
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editores
+.vscode/
+.idea/
+
+# Temporários
+*.tmp
+*.bak
+*~
