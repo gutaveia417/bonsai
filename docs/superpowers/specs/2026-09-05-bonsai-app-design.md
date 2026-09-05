@@ -305,9 +305,26 @@ coloridos, e cada item leva a uma seção do guia.
 
 | estado | efeito |
 |---|---|
-| `adaptacao` | ⛔ adubar, podar, transplantar, mudar de lugar. ⚠️ queda de folha é normal |
-| `recuperacao` | ⛔ adubar, podar, aramar, transplantar. ✅ sombra, água regular, esperar. ⚠️ só voltar a mexer depois de broto novo |
-| `pos-transplante` | ⛔ adubar até `estadoAte`, podar. ⚠️ sombra por 3–4 semanas. ✅ regar |
+| `adaptacao` | ⛔ adubar, podar, transplantar, mudar de lugar. **✅ regar** (pelo perfil da espécie), observar. ⚠️ queda de folha é normal |
+| `recuperacao` | ⛔ adubar, podar, aramar, transplantar. ✅ manter à sombra sem mudar de lugar, regar, esperar. ⚠️ só voltar a mexer depois de broto novo |
+| `pos-transplante` | ⛔ adubar até `estadoAte`, podar, **transplantar**. ⚠️ sombra por 3–4 semanas. ✅ regar |
+
+**Toda linha de estado precisa de pelo menos um ✅.** Uma tela que lista quatro
+proibições e nenhuma permissão diz a um iniciante que não há nada a fazer por
+uma planta viva — e contradiz o checklist de rega, que vai listá-la na mesma
+hora. Regar é quase sempre a permissão que sobra.
+
+**`pos-transplante` proíbe transplantar.** Faltava na primeira redação desta
+tabela, por descuido: as linhas `adaptacao` e `recuperacao` proibiam, e esta
+não. Uma árvore transplantada há quatro dias é a que *menos* pode ser
+transplantada de novo.
+
+**Uma `acao` nunca aparece em duas listas ao mesmo tempo.** Isso vale dentro da
+mesma tabela, não só entre fase e estado. Quando dois itens falam de atos
+físicos diferentes, eles precisam de `acao` diferentes — `podar-raiz` (permitida
+na engorda, na janela) não é `podar` (galho), do mesmo modo que `podar-copa` já
+é separada. E uma `acao` nunca nomeia o oposto do que o texto instrui: um item
+que diz "mantenha onde está" não se chama `mudar-lugar`.
 
 Nota de desenho: aramar em `engorda` é ⚠️, **não** ⛔ — não é erro doutrinário,
 é prematuro. O que é proibido em engorda é podar a copa.
