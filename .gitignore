@@ -23,3 +23,6 @@ desktop.ini
 *.tmp
 *.bak
 *~
+
+# Workspace do subagent-driven-development (rascunho, nao versionado)
+.superpowers/
