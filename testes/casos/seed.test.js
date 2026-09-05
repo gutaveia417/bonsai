@@ -50,3 +50,72 @@ assert.grupo('seed', function () {
   Bonsai.dadosIniciais.montar().arvores[0].apelido = 'X';
   assert.eq(Bonsai.dadosIniciais.montar().arvores[0].apelido, 'Jabuticaba', 'montar() não compartilha estado');
 });
+
+// P1 / R7 — null (não informado) nunca vira valor plausível. Só a Jabuticaba
+// tem número real de sol por árvore; luz e adubo de cada espécie só têm campo
+// preenchido onde a seção 8 da spec deu o dado explicitamente.
+assert.grupo('seed - não informado é null, não é chute', function () {
+  var db = Bonsai.dadosIniciais.montar();
+  var por = function (id) { return db.arvores.filter(function (a) { return a.id === id; })[0]; };
+  var especie = function (id) { return db.especies.filter(function (e) { return e.id === id; })[0]; };
+
+  // solHoras por árvore — spec só dá número (6 h) para a Jabuticaba
+  assert.eq(por('jabuticaba').solHoras, 6, 'jabuticaba: 6 h de sol, dado explícito');
+  ['primavera', 'serissa', 'azaleia', 'ficus-a', 'ficus-b', 'ficus-c'].forEach(function (id) {
+    assert.eq(por(id).solHoras, null, id + ': solHoras não informado é null');
+  });
+
+  // vaso.furada — só a Jabuticaba tem essa afirmação na spec
+  assert.eq(por('jabuticaba').vaso.furada, true, 'jabuticaba: vaso furada, dado explícito');
+  ['primavera', 'serissa', 'azaleia'].forEach(function (id) {
+    assert.eq(por(id).vaso.furada, null, id + ': furada não informado é null');
+  });
+
+  // luz por espécie — só entra número onde a spec deu horas
+  assert.eq(especie('jabuticaba').luz.horasMin, 5, 'jabuticaba luz: horasMin dado explícito');
+  assert.eq(especie('jabuticaba').luz.horasMax, 6, 'jabuticaba luz: horasMax dado explícito');
+  assert.eq(especie('serissa').luz.horasMin, 2, 'serissa luz: intervalo dado explícito (2-5h)');
+  assert.eq(especie('serissa').luz.horasMax, 5, 'serissa luz: intervalo dado explícito (2-5h)');
+  ['bougainvillea', 'rhododendron', 'ficus-panda'].forEach(function (id) {
+    assert.eq(especie(id).luz.horasMin, null, id + ' luz: horasMin não informado é null');
+    assert.eq(especie(id).luz.horasMax, null, id + ' luz: horasMax não informado é null');
+  });
+
+  // adubo — só entra o que a seção 8 informou por espécie, o resto é null
+  var jabAdubo = especie('jabuticaba').adubo;
+  assert.eq(jabAdubo.formula, '20-05-20', 'jabuticaba adubo: fórmula dada');
+  assert.eq(jabAdubo.frequencia, 'quinzenal', 'jabuticaba adubo: frequência dada');
+  assert.eq(jabAdubo.temporada, [9, 10, 11, 12, 1, 2, 3], 'jabuticaba adubo: temporada dada (set-mar)');
+
+  var bouAdubo = especie('bougainvillea').adubo;
+  assert.eq(bouAdubo.formula, '10-10-10', 'primavera adubo: só a fórmula foi dada');
+  assert.eq(bouAdubo.frequencia, null, 'primavera adubo: frequência não informada é null');
+  assert.eq(bouAdubo.temporada, null, 'primavera adubo: temporada não informada é null');
+  assert.eq(bouAdubo.dose, null, 'primavera adubo: dose não informada é null');
+
+  var serAdubo = especie('serissa').adubo;
+  assert.eq(serAdubo.formula, '10-10-10', 'serissa adubo: fórmula dada');
+  assert.eq(serAdubo.frequencia, 'quinzenal', 'serissa adubo: frequência dada');
+  assert.eq(serAdubo.dose, 'meia', 'serissa adubo: dose dada (meia)');
+  assert.eq(serAdubo.temporada, null, 'serissa adubo: temporada não informada é null');
+
+  // Azaleia: nenhuma fórmula base foi dada na spec — só "ZERO adubo" do
+  // estado de recuperação, que não é dado de espécie.
+  var azAdubo = especie('rhododendron').adubo;
+  assert.eq(azAdubo.formula, null, 'azaleia adubo: fórmula não informada é null');
+  assert.eq(azAdubo.frequencia, null, 'azaleia adubo: frequência não informada é null');
+  assert.eq(azAdubo.temporada, null, 'azaleia adubo: temporada não informada é null');
+  assert.eq(azAdubo.dose, null, 'azaleia adubo: dose não informada é null');
+
+  var ficAdubo = especie('ficus-panda').adubo;
+  assert.eq(ficAdubo.formula, '10-10-10', 'ficus adubo: fórmula dada');
+  assert.eq(ficAdubo.frequencia, 'quinzenal', 'ficus adubo: frequência dada');
+  assert.eq(ficAdubo.dose, null, 'ficus adubo: dose não informada é null');
+  assert.eq(ficAdubo.temporada, null, 'ficus adubo: temporada não informada é null');
+
+  // R8 — janela de transplante é regional (Naviraí), não biológica; mesma
+  // janela nas 5 espécies, vinda de uma única constante nomeada no seed.
+  db.especies.forEach(function (e) {
+    assert.eq(e.janelaTransplante, [8, 9], e.id + ': janela de transplante de Naviraí (ago-set)');
+  });
+});

@@ -226,11 +226,29 @@ checklist de rega, porque é lá que a decisão errada seria tomada.
 
 ```js
 { id, arvoreId, titulo, comoFazer, origem: 'seed'|'usuario',
-  criadaEm, concluidaEm: null, eventoAoConcluir: null }
+  criadaEm, concluidaEm: null, eventoAoConcluir: null, grupo: null }
 ```
 
 `eventoAoConcluir` permite que concluir "transplantar a Primavera" abra
 direto o formulário de evento `transplante`.
+
+`grupo` cobre a tarefa que vale para várias árvores de uma vez — a chegada dos
+três Ficus é uma tarefa só, com `arvoreId: null` e `grupo:
+'experimento-ficus'`. Quando `grupo` está preenchido, a tarefa aparece na ficha
+de todas as árvores daquele grupo.
+
+### 4.7.1 `null` × `[]` — a diferença é semântica, não estilística
+
+Em todo o modelo de dados:
+
+- **`null` significa "o usuário não informou".** A tela pede a informação.
+- **`[]` ou `'zero'` significa "explicitamente nenhum".** A tela afirma a ausência.
+
+`adubo.temporada: []` diria *"não aduba em mês nenhum"*, que é uma afirmação
+sobre a planta. `adubo.temporada: null` diz *"não sei em que meses"*. Os dois
+casos geram telas opostas, e confundi-los é a forma mais fácil de o app
+inventar informação. **Campo `null` nunca vira permissão nem alerta** — vira
+⚠️ "não definido para esta espécie; defina antes de adubar".
 
 ### 4.8 `slotsFoto`
 

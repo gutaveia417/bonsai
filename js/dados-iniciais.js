@@ -4,6 +4,11 @@ var Bonsai = (typeof window !== 'undefined'
 
 Bonsai.dadosIniciais = (function () {
 
+  // Janela de transplante é clima regional (Naviraí: agosto-setembro), não
+  // biologia de espécie — ver guia seção 6. Constante única para não sugerir
+  // que cada espécie tem sua própria janela, sem evidência para isso.
+  var JANELA_TRANSPLANTE_NAVIRAI = [8, 9];
+
   var MODELO = {
     schemaVersion: 1,
     ajustes: { ocultarFotosNaImpressao: false },
@@ -24,7 +29,7 @@ Bonsai.dadosIniciais = (function () {
           carencia: 'só 3–4 semanas depois do transplante',
           notas: []
         },
-        janelaTransplante: [8, 9],
+        janelaTransplante: JANELA_TRANSPLANTE_NAVIRAI,
         podaQuando: null,
         cuidados: ['Tronco único com bifurcação em Y baixa nesta árvore.'],
         armadilhas: ['Podar a copa em engorda — cada folha é uma fábrica de grossura de tronco.']
@@ -35,16 +40,16 @@ Bonsai.dadosIniciais = (function () {
         nomeCientifico: 'Bougainvillea',
         rega: 'secar-entre-regas',
         regaNota: 'Morre mais por excesso do que por falta.',
-        luz: { horasMin: 6, horasMax: 8, descricao: 'sol pleno desde o primeiro dia' },
+        luz: { horasMin: null, horasMax: null, descricao: 'sol pleno desde o primeiro dia' },
         adubo: {
           formula: '10-10-10',
-          frequencia: 'quinzenal',
-          temporada: [9, 10, 11, 12, 1, 2, 3],
-          dose: 'cheia',
+          frequencia: null,
+          temporada: null,
+          dose: null,
           carencia: null,
-          notas: []
+          notas: ['Frequência, época e dose não foram informadas — só a fórmula. Definir antes da primeira adubação.']
         },
-        janelaTransplante: [8, 9],
+        janelaTransplante: JANELA_TRANSPLANTE_NAVIRAI,
         podaQuando: null,
         cuidados: [
           'Floração se induz por estresse hídrico (reduzir rega 2–3 semanas), não por adubo.',
@@ -62,12 +67,12 @@ Bonsai.dadosIniciais = (function () {
         adubo: {
           formula: '10-10-10',
           frequencia: 'quinzenal',
-          temporada: [9, 10, 11, 12, 1, 2, 3],
+          temporada: null,
           dose: 'meia',
           carencia: null,
-          notas: []
+          notas: ['Época de adubação não foi informada.']
         },
-        janelaTransplante: [8, 9],
+        janelaTransplante: JANELA_TRANSPLANTE_NAVIRAI,
         podaQuando: null,
         cuidados: ['Sensível a sal no substrato.', 'Derruba folha a cada mudança de lugar.'],
         armadilhas: ['Mudar de lugar sem necessidade — a queda de folha assusta mas é normal.']
@@ -78,16 +83,19 @@ Bonsai.dadosIniciais = (function () {
         nomeCientifico: 'Rhododendron',
         rega: 'sempre-umido',
         regaNota: 'Acidófila — substrato ácido não pode secar (regra geral de espécie saudável).',
-        luz: { horasMin: 0, horasMax: 3, descricao: 'sombra' },
+        luz: { horasMin: null, horasMax: null, descricao: 'sombra' },
         adubo: {
-          formula: '20-05-20',
-          frequencia: 'quinzenal',
-          temporada: [9, 10, 11, 12, 1, 2, 3],
-          dose: 'cheia',
+          formula: null,
+          frequencia: null,
+          temporada: null,
+          dose: null,
           carencia: null,
-          notas: []
+          notas: [
+            'Nenhuma fórmula base de adubo foi informada para esta espécie — definir antes da primeira adubação.',
+            'Enquanto o estado da árvore for recuperação, adubo fica bloqueado independente desta fórmula (ver estado).'
+          ]
         },
-        janelaTransplante: [8, 9],
+        janelaTransplante: JANELA_TRANSPLANTE_NAVIRAI,
         podaQuando: 'só depois da floração',
         cuidados: [
           'Poda só depois da floração — forma os botões do ano seguinte logo após florir.',
@@ -101,16 +109,16 @@ Bonsai.dadosIniciais = (function () {
         nomeCientifico: "Ficus microcarpa 'Panda'",
         rega: 'sempre-umido',
         regaNota: 'Água constante.',
-        luz: { horasMin: 6, horasMax: 8, descricao: 'sol pleno' },
+        luz: { horasMin: null, horasMax: null, descricao: 'sol pleno' },
         adubo: {
           formula: '10-10-10',
           frequencia: 'quinzenal',
-          temporada: [9, 10, 11, 12, 1, 2, 3],
-          dose: 'cheia',
+          temporada: null,
+          dose: null,
           carencia: null,
-          notas: []
+          notas: ['Dose e época de adubação não foram informadas.']
         },
-        janelaTransplante: [8, 9],
+        janelaTransplante: JANELA_TRANSPLANTE_NAVIRAI,
         podaQuando: null,
         cuidados: ['Aramação em engorda aparece como atenção, não proibida — ramo verde não segura curva.'],
         armadilhas: ['Aramar cedo demais, antes de consistência de lápis.']
@@ -164,10 +172,10 @@ Bonsai.dadosIniciais = (function () {
         estadoDesde: '2026-09-05',
         estadoAte: null,
 
-        vaso: { descricao: 'bacia (transplante pendente)', furada: true, geotextil: null },
+        vaso: { descricao: 'bacia (transplante pendente)', furada: null, geotextil: null },
         substrato: [],
         posicao: 'sol pleno',
-        solHoras: 8,
+        solHoras: null,
 
         gatilhoFase: null,
 
@@ -189,10 +197,10 @@ Bonsai.dadosIniciais = (function () {
         estadoDesde: '2026-09-05',
         estadoAte: null,
 
-        vaso: { descricao: 'torrão original', furada: true, geotextil: null },
+        vaso: { descricao: 'torrão original', furada: null, geotextil: null },
         substrato: [],
         posicao: 'meia-sombra, 2–5 h de sol da manhã',
-        solHoras: 3,
+        solHoras: null,
 
         gatilhoFase: null,
 
@@ -214,10 +222,10 @@ Bonsai.dadosIniciais = (function () {
         estadoDesde: '2026-09-05',
         estadoAte: null,
 
-        vaso: { descricao: 'vaso atual', furada: true, geotextil: null },
+        vaso: { descricao: 'vaso atual', furada: null, geotextil: null },
         substrato: [],
         posicao: 'sombra',
-        solHoras: 0,
+        solHoras: null,
 
         gatilhoFase: null,
 
@@ -246,7 +254,7 @@ Bonsai.dadosIniciais = (function () {
         vaso: { descricao: null, furada: null, geotextil: null },
         substrato: [],
         posicao: 'sol pleno',
-        solHoras: 8,
+        solHoras: null,
 
         gatilhoFase: null,
 
@@ -275,7 +283,7 @@ Bonsai.dadosIniciais = (function () {
         vaso: { descricao: null, furada: null, geotextil: null },
         substrato: [],
         posicao: 'sol pleno',
-        solHoras: 8,
+        solHoras: null,
 
         gatilhoFase: null,
 
@@ -304,7 +312,7 @@ Bonsai.dadosIniciais = (function () {
         vaso: { descricao: null, furada: null, geotextil: null },
         substrato: [],
         posicao: 'sol pleno',
-        solHoras: 8,
+        solHoras: null,
 
         gatilhoFase: null,
 
