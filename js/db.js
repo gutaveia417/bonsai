@@ -30,8 +30,22 @@ Bonsai.db = (function () {
       db = passo(db);
       v++;
     }
-    db.schemaVersion = v;
+    db.schemaVersion = v; // pode ficar abaixo de VERSAO_SCHEMA se a cadeia parou no meio
     return db;
+  }
+
+  // Remove os campos derivados em memória (somenteLeitura/motivo) antes de
+  // gravar ou exportar — a raiz persistida/exportada tem que ter exatamente
+  // as chaves que o seed produz, nunca estado que só faz sentido durante um
+  // carregamento (achado 2 da revisão da fix round 1).
+  function somenteDados(db) {
+    var copia = {};
+    for (var chave in db) {
+      if (!Object.prototype.hasOwnProperty.call(db, chave)) continue;
+      if (chave === 'somenteLeitura' || chave === 'motivo') continue;
+      copia[chave] = db[chave];
+    }
+    return copia;
   }
 
   function migrar(bruto) {
@@ -45,8 +59,18 @@ Bonsai.db = (function () {
         '). Atualize o app antes de gravar, senão você perde informação.';
     } else if (versao < VERSAO_SCHEMA) {
       db = aplicarMigracoes(bruto, versao);
-      somenteLeitura = false;
-      motivo = null;
+      if (db.schemaVersion < VERSAO_SCHEMA) {
+        // A cadeia não chegou até a versão atual (passo faltando ou fora de
+        // ordem em MIGRACOES). Gravar isso seria sobrescrever o banco real do
+        // usuário com um híbrido — trava em vez de arriscar (achado 1 da
+        // revisão da fix round 1).
+        somenteLeitura = true;
+        motivo = 'Não foi possível concluir a migração destes dados para a versão atual do app (v' +
+          VERSAO_SCHEMA + '). Exporte os dados antes de qualquer coisa.';
+      } else {
+        somenteLeitura = false;
+        motivo = null;
+      }
     } else {
       db = bruto;
       somenteLeitura = false;
@@ -60,7 +84,7 @@ Bonsai.db = (function () {
 
   function salvar(db) {
     if (db.somenteLeitura) return;
-    localStorage.setItem(CHAVE, JSON.stringify(db));
+    localStorage.setItem(CHAVE, JSON.stringify(somenteDados(db)));
   }
 
   function carregar() {
@@ -88,7 +112,7 @@ Bonsai.db = (function () {
   }
 
   function exportar(db) {
-    return JSON.stringify(db, null, 2);
+    return JSON.stringify(somenteDados(db), null, 2);
   }
 
   function importar(texto) {
@@ -99,7 +123,10 @@ Bonsai.db = (function () {
       return { ok: false, db: null, erro: 'JSON inválido: ' + e.message };
     }
 
-    if (!bruto || typeof bruto !== 'object' || typeof bruto.schemaVersion !== 'number') {
+    // importar() substitui o banco vivo — recusar um arquivo ruim é
+    // reversível, sobrescrever com lixo estruturado não é (R12).
+    if (!bruto || typeof bruto !== 'object' || typeof bruto.schemaVersion !== 'number' ||
+        !Array.isArray(bruto.arvores) || !Array.isArray(bruto.especies)) {
       return { ok: false, db: null, erro: 'Arquivo não é um banco de dados do Bonsai.' };
     }
 
