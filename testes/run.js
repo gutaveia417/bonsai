@@ -40,6 +40,15 @@ const arquivosGuia = fs.existsSync(dirGuia)
   : [];
 arquivosGuia.forEach(f => carregar(path.join('js', 'guia', f)));
 
+// Telas (js/telas/*.js) — carregadas antes de js/app.js, igual ao index.html.
+const dirTelas = path.join(raiz, 'js', 'telas');
+const arquivosTelas = fs.existsSync(dirTelas)
+  ? fs.readdirSync(dirTelas).filter(f => f.endsWith('.js')).sort()
+  : [];
+arquivosTelas.forEach(f => carregar(path.join('js', 'telas', f)));
+
+carregar('js/app.js');
+
 vm.runInContext(fs.readFileSync(path.join(__dirname, 'assert.js'), 'utf8'), contexto, { filename: 'assert.js' });
 
 const dirCasos = path.join(__dirname, 'casos');
