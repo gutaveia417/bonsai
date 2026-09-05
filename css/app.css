@@ -266,3 +266,247 @@ body { margin: 0; font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, s
   font-weight: 700;
   cursor: pointer;
 }
+
+.visualmente-oculto {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---- Tela Árvores — lista (Task 10) ---- */
+
+.arvore-card {
+  display: block;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 12px;
+  margin-bottom: 12px;
+  min-height: 44px;
+  color: inherit;
+  text-decoration: none;
+  background: #fff;
+}
+
+.arvore-card h3 {
+  margin: 0 0 4px;
+  font-size: 16px;
+}
+
+.arvore-especie {
+  color: #555;
+  margin: 0 0 4px;
+  font-style: italic;
+}
+
+.arvore-fase,
+.arvore-estado,
+.arvore-marco {
+  margin: 2px 0;
+}
+
+.arvore-fase--indefinida {
+  color: #8a5a00;
+  font-weight: 700;
+}
+
+.arvore-marco {
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.arvore-card > .botao-secundario {
+  margin-top: 4px;
+}
+
+/* Grupo "a chegar" (os três Ficus antes da entrega, spec §8) — cartão
+   distinto, com o formulário mínimo do fluxo de chegada embutido. */
+.arvore-card--a-chegar {
+  border-style: dashed;
+  border-color: #0d47a1;
+  background: #eaf2fd;
+}
+
+.arvore-status {
+  font-weight: 700;
+  color: #0d47a1;
+  margin: 0 0 8px;
+}
+
+.chegada-data-label {
+  display: block;
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+.chegada-data-input {
+  display: block;
+  min-height: 44px;
+  width: 100%;
+  margin-top: 4px;
+  padding: 6px 8px;
+  font: inherit;
+  border: 1px solid #999;
+  border-radius: 4px;
+}
+
+/* ---- Tela Árvores — ficha (Task 10) ---- */
+
+.ficha-cabecalho {
+  margin-bottom: 16px;
+}
+
+.ficha-especie {
+  color: #555;
+  font-style: italic;
+  margin: 0 0 8px;
+}
+
+.ficha-fase--indefinida {
+  color: #8a5a00;
+  font-weight: 700;
+}
+
+.ficha-estado {
+  font-weight: 700;
+}
+
+/* Blocos de regra — mesma paleta dos alertas da tela Hoje (bloqueio/atencao/
+   info), reaproveitada aqui como proibido/atencao/permitido, para que o
+   dono não precise aprender duas linguagens de cor no mesmo app. */
+.regra-bloco {
+  border: 1px solid #ccc;
+  border-left-width: 6px;
+  border-radius: 4px;
+  padding: 12px;
+  margin-bottom: 12px;
+}
+
+.regra-bloco h3 {
+  margin: 0 0 8px;
+  font-size: 16px;
+}
+
+.regra-bloco-permitido {
+  border-color: #2e7d32;
+  background: #eaf6ea;
+}
+
+.regra-bloco-proibido {
+  border-color: #b00020;
+  background: #fdecea;
+}
+
+.regra-bloco-atencao {
+  border-color: #8a5a00;
+  background: #fff6e0;
+}
+
+.regra-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.regra-item {
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  padding: 8px 0;
+}
+
+.regra-item:first-child {
+  border-top: none;
+  padding-top: 0;
+}
+
+.regra-texto {
+  margin: 0 0 4px;
+  font-weight: 700;
+}
+
+.regra-porque summary {
+  cursor: pointer;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.regra-porque p {
+  margin: 6px 0;
+}
+
+.grafico-acoes {
+  margin-top: 8px;
+}
+
+/* Faixa de rega de 30 dias (spec §4.4) — uma marca por dia, sem número
+   inventado: dia sem registro fica em branco, nunca vira "0". */
+.rega-faixa {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  margin: 10px 0;
+}
+
+.rega-faixa-dia {
+  width: 9px;
+  height: 18px;
+  border-radius: 2px;
+  background: #eee;
+  border: 1px solid #ddd;
+}
+
+.rega-faixa-dia--regada {
+  background: #2e7d32;
+  border-color: #245e28;
+}
+
+.rega-media {
+  color: #555;
+}
+
+.evento-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.evento-item {
+  border-top: 1px solid #eee;
+  padding: 10px 0;
+}
+
+.evento-item:first-child {
+  border-top: none;
+}
+
+.evento-data {
+  font-weight: 700;
+  margin: 0 0 2px;
+}
+
+.evento-tipo {
+  margin: 0 0 2px;
+}
+
+.evento-detalhe,
+.evento-nota {
+  color: #555;
+  margin: 0 0 2px;
+}
+
+.substrato-lista {
+  margin: 4px 0 12px;
+  padding-left: 20px;
+}
+
+.experimento-nota {
+  font-style: italic;
+  color: #555;
+}
