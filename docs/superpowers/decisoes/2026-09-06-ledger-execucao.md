@@ -819,3 +819,74 @@ ou de limpar os dados do site.
 **Não alterar o seed nem os textos de regra até ter as respostas.** O invariante
 1 vale aqui como em todo o resto: campo vazio com pergunta aberta ganha de valor
 plausível.
+
+## FILA — tarefa nova: previsão do tempo (sem data)
+
+Pedida pelo dono em 06/09/2026. **Não implementada.** Entra na fila depois da
+Task 11, por decisão dele.
+
+### Prioridade: Task 11 antes do clima
+
+Razão do dono, e é boa: *"eu consigo olhar previsão no app do tempo em dois
+segundos — o que eu não consigo é registrar o que fiz."* Se durante os dias de
+chuva ele abrigar a Primavera, ou notar que a Serissa demorou a secar, essa
+observação se perde sem o formulário de evento. Observação sobre as plantas dele
+vale mais que previsão sobre o céu.
+
+### API escolhida e VERIFICADA (não presumida)
+
+Open-Meteo. Testado em 06/09/2026:
+- Naviraí no geocoding: `-23.065, -54.1906`, fuso `America/Campo_Grande`
+- `fetch` cross-origin a partir de `https://gutaveia417.github.io`: HTTP 200 em
+  766 ms — CORS funciona do navegador, que era o teste decisivo
+- Sem chave, sem cadastro, ~1 KB para 7 dias
+- Campos úteis: `temperature_2m`, `temperature_2m_max/min`,
+  `precipitation_probability_max`, `precipitation_sum`, `precipitation_hours`
+
+### A regra que governa a feature
+
+**Previsão entra como contexto, nunca como instrução.** A instrução de rega
+continua sendo o teste do dedo, sempre. O app nunca diz "regue" nem "não regue"
+com base em previsão. Marcada como previsão, com fonte e hora da consulta —
+mesmo tratamento do selo de estimativa do substrato.
+
+### Três achados do teste que MUDAM o desenho (concordados pelo dono)
+
+**1. Milímetros e horas, não só probabilidade.** 12/09 tinha 66% de chance com
+0,6 mm em 3 h — garoa. Um aviso que dispara nisso ensina o dono a ignorar
+avisos, o que é pior que não ter aviso. O gatilho olha os três campos. Custo
+aceito: o app fica quieto em dias que outro app chama de chuvosos.
+
+**2. Chuva não é rega, e menos ainda com cobertura de casca.** Chuva pode não
+chegar ao substrato — copa densa, bancada coberta, pancada rápida. Primavera e
+Serissa têm casca por cima, que absorve e parece molhada enquanto o substrato
+abaixo pode não ter recebido nada. Mesmo engano do teste do dedo, um nível acima.
+
+**3. A lógica se inverte para a árvore mais frágil.** 36,6 mm em 21 h sobre a
+Primavera (torrão desfeito, raízes expostas, absorvendo pouco) não é "não precisa
+regar" — é risco de encharcamento. **O bloco de clima é mais sinal de risco que
+economia de rega**, e a árvore que mais precisa dele é a que menos aguenta água.
+
+### Decisão em aberto, a resolver DENTRO da tarefa
+
+Onde mora o cache do clima. O dono concordou com chave separada no localStorage,
+fora das sete chaves da raiz, com `exportar()` ignorando — clima é dado externo
+re-consultável, e backup é para o que não se recupera.
+
+**Mas isso quebra uma propriedade:** hoje `js/db.js` é o único módulo que toca
+armazenamento. O dono **não quis decidir com pressa de janela climática** e pediu
+que a decisão venha como parte da tarefa, **com a alternativa considerada** — por
+exemplo, o clima passar pelo `db.js` num namespace próprio, mantendo a
+propriedade única. Não decidir por omissão.
+
+### Requisitos restantes
+
+- Bloco na tela Hoje, perto do checklist: temperatura atual e mín/máx, chuva hoje
+  e amanhã, aviso de sequência de dias chuvosos
+- Sem rede: o bloco some ou mostra "sem conexão — última consulta em [hora]".
+  Nunca quebra a tela, nunca bloqueia o checklist
+- Cache com carimbo de hora; dado velho identificado como velho > nenhum dado
+- Coordenadas fixas no código, sem geolocalização
+- Teste de invariante obrigatório: nenhum texto do bloco de clima contém
+  instrução de regar ou não regar — mesmo espírito do laço que já proíbe
+  imperativos no checklist de rega
