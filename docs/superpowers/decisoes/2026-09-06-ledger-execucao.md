@@ -1,11 +1,10 @@
 # Registro de decisões — execução do plano
 
-Instantâneo do ledger de execução, tirado em 06/09/2026.
+Instantâneo do ledger de execução, atualizado em 06/09/2026.
 
 O ledger de trabalho vive em `.superpowers/sdd/`, que é área de rascunho e
 não é versionada. Este arquivo existe para que as decisões não fiquem só na
-máquina onde o trabalho foi feito. Ele contém as 28 rulings tomadas durante a
-execução — as que mudaram o desenho do app, não as de processo.
+máquina onde o trabalho foi feito.
 
 ---
 
@@ -756,3 +755,67 @@ que nem a spec nem o plano previram.
 Dívidas registradas que continuam valendo: R23 (paga na Task 10), R22 (as 41
 âncoras do guia — contrato da Task 13/14), R27 (aba apagada na rota de evento e
 enum cru "medicao" — dívidas da Task 11).
+
+## PUBLICADO — 06/09/2026
+
+- Repositório: https://github.com/gutaveia417/bonsai (público)
+- App: https://gutaveia417.github.io/bonsai/
+- 37 commits enviados, `main`, Pages servindo de `main` na raiz.
+- **E-mail reescrito antes do push** (decisão do dono): os 6 commits que eu havia
+  assinado com o gmail dele viraram noreply. Árvore de arquivos verificada
+  idêntica ao backup antes de descartá-lo. Histórico público tem só noreply.
+- O "Adicionar README" ficou ligado na criação e o GitHub gerou um commit inicial
+  **assinado com o gmail dele**. Merge teria fixado essa exposição no público, o
+  que desfaria a decisão. Sobrescrevi com `--force-with-lease` (repo com 5
+  minutos, nada clonado, perdeu-se um README de uma linha).
+- `master` e `backup-antes-do-rewrite` deletados: ambos carregavam o e-mail antigo
+  e o rewrite mudou todos os SHAs.
+- Subcaminho verificado ANTES do push (servindo de /Estudos-bonsai/) e DEPOIS na
+  URL real: módulos carregam, ficha da Azaleia com blocos de regra, gráfico com
+  botão de primeira medição, nota de rega, 3 "não informado", zero "null".
+- Ledger versionado em docs/superpowers/decisoes/ — as 28 rulings deixaram de
+  existir só nesta máquina.
+
+**DEFEITO CONHECIDO, não corrigido (loop parado):** os links "Por quê?" saem como
+`#/guia/guia#ancora` — o `guiaAncora` já traz o prefixo `guia#` e a tela prefixa
+`#/guia/` de novo. URL não pode ter dois `#`. Inofensivo hoje (a aba Guia é stub),
+mas quebra o ensino inteiro quando o guia existir. Corrigir junto da Task 14.
+
+## PENDENTE — atualização de dados reais (dono informou em 06/09/2026, madrugada)
+
+O dono informou fatos novos sobre as plantas e foi dormir antes de responder às
+perguntas de detalhe. **Nada foi alterado no seed** — faltam os dados para fazer
+isso sem inventar.
+
+O que ele disse:
+- Serissa e Primavera **já foram trocadas de bacia**.
+- **Nenhuma raiz foi cortada** em nenhuma das duas.
+- **Nem na Jabuticaba.**
+
+Consequência imediata, e é séria: o cartão de bloqueio de adubo da Jabuticaba diz
+*"A raiz cortada no transplante ainda está cicatrizando; adubo agora pode queimar
+raízes novas antes delas se estabelecerem."* Se não houve corte de raiz, **essa
+frase é falsa**. Trocar de bacia sem mexer na raiz é operação bem menos agressiva
+que transplante com poda radicular. A restrição de adubo pode continuar fazendo
+sentido (a raiz precisa colonizar o substrato novo), mas o motivo declarado está
+errado — e o projeto inteiro existe para não afirmar o que não é verdade.
+
+O mesmo texto vem de `js/regras.js`, `POR_ESTADO['pos-transplante']`, então
+afeta qualquer árvore nesse estado, não só a Jabuticaba.
+
+**Perguntas em aberto, feitas e não respondidas:**
+1. Data da troca de bacia da Serissa e da Primavera (uma ou duas datas).
+2. Que substrato entrou em cada uma — a Primavera levou a mistura planejada
+   (20% húmus / 45% substrato comercial / 35% casca de pinus) ou outra?
+3. A terra vermelha da superfície da Serissa foi removida nessa troca?
+   (Existe tarefa aberta no seed para isso.)
+4. Confirmar que na Jabuticaba, em 01/09, também não houve corte de raiz.
+
+**Também não respondido:** se ele já abriu o app no celular. Isso decide o
+caminho da correção — se já abriu, o seed foi copiado para o localStorage do
+aparelho e mudar o código não atualiza o que já está lá; precisaria de migração
+ou de limpar os dados do site.
+
+**Não alterar o seed nem os textos de regra até ter as respostas.** O invariante
+1 vale aqui como em todo o resto: campo vazio com pergunta aberta ganha de valor
+plausível.
