@@ -253,30 +253,37 @@ Bonsai.regras = (function () {
     },
 
     // `regar` não aparece em `permitido` aqui: é cuidado básico (NUCLEO).
+    // Nenhum texto aqui pode presumir que a raiz foi cortada: transplante e
+    // poda de raiz são coisas diferentes (spec 5.1) e um transplante real
+    // pode não cortar raiz nenhuma — foi exatamente o que aconteceu com a
+    // Serissa e a Primavera em 05/09/2026 (torrão mexido/desfeito, raiz
+    // exposta, mas nada cortado). O motivo real da carência não é cicatrizar
+    // corte: é a raiz ainda não ter refeito contato com o substrato novo, o
+    // que já basta para adubo queimar raiz fina antes dela se firmar.
     'pos-transplante': {
       proibido: [
         {
           acao: 'adubar',
           texto: 'Adubar até {ate}.',
-          porque: 'A raiz cortada no transplante ainda está cicatrizando; adubo agora pode queimar raízes novas antes delas se estabelecerem.',
+          porque: 'A raiz ainda não refez contato firme com o substrato novo; adubo agora pode queimar raízes finas antes delas se firmarem.',
           guiaAncora: 'guia#pos-transplante-nao-adubar'
         },
         {
           acao: 'podar',
           texto: 'Podar até {ate}.',
-          porque: 'A planta está gastando energia para reconstruir raiz cortada; qualquer poda agora compete com essa prioridade.',
+          porque: 'A planta está gastando energia para a raiz se firmar no substrato novo; qualquer poda agora compete com essa prioridade.',
           guiaAncora: 'guia#pos-transplante-nao-podar'
         },
         {
           acao: 'podar-raiz',
           texto: 'Podar raiz de novo até {ate}.',
-          porque: 'A raiz já foi cortada uma vez neste transplante recente; cortar de novo agora não deixa tempo para cicatrizar antes de emitir raízes novas.',
+          porque: 'A raiz deste transplante recente ainda está se firmando no substrato novo; mexer nela de novo agora não dá tempo para isso acontecer antes de exigir outra recuperação.',
           guiaAncora: 'guia#pos-transplante-nao-podar-raiz'
         },
         {
           acao: 'transplantar',
           texto: 'Transplantar de novo até {ate}.',
-          porque: 'Uma árvore recém-transplantada é a que menos aguenta ser transplantada de novo — a raiz ainda está cicatrizando do corte anterior.',
+          porque: 'Uma árvore recém-transplantada é a que menos aguenta ser transplantada de novo — a raiz ainda está se firmando no substrato novo do transplante anterior.',
           guiaAncora: 'guia#pos-transplante-nao-transplantar'
         }
       ],
@@ -284,7 +291,7 @@ Bonsai.regras = (function () {
         {
           acao: 'manter-sombra',
           texto: 'Manter à sombra por 3 a 4 semanas depois do transplante.',
-          porque: 'Sol direto demais logo depois do transplante aumenta a perda de água pela folhagem, e a raiz ainda cortada não consegue repor o que se perde.',
+          porque: 'Sol direto demais logo depois do transplante aumenta a perda de água pela folhagem, e a raiz, ainda se firmando no substrato novo, não consegue repor o que se perde.',
           guiaAncora: 'guia#pos-transplante-sombra'
         }
       ]

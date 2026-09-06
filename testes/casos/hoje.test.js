@@ -63,9 +63,17 @@ assert.grupo('hoje.tarefasAbertas — só concluidaEm === null', function () {
   ] };
   assert.eq(Bonsai.telas.hoje.tarefasAbertas(dbTodasAbertas).length, 2, 'todas abertas: as duas voltam');
 
-  // Contra o seed real: exatamente as 7 tarefas do seed estão abertas.
+  // Contra o seed real: das 7 tarefas do seed, 2 já nasceram concluídas
+  // (Primavera transplantada e Serissa com a terra vermelha removida, ambas
+  // em 05/09/2026 — correção de dados reais de 06/09/2026), então 5 ficam
+  // abertas.
   var dbSeed = Bonsai.dadosIniciais.montar();
-  assert.eq(Bonsai.telas.hoje.tarefasAbertas(dbSeed).length, 7, 'seed limpo tem 7 tarefas abertas');
+  var abertasSeed = Bonsai.telas.hoje.tarefasAbertas(dbSeed);
+  assert.eq(abertasSeed.length, 5, 'seed limpo tem 5 tarefas abertas (2 das 7 já nasceram concluídas)');
+  assert.eq(abertasSeed.some(function (t) { return t.id === 'tarefa-primavera-transplante'; }), false,
+    'a tarefa de transplantar a primavera não está mais aberta');
+  assert.eq(abertasSeed.some(function (t) { return t.id === 'tarefa-serissa-terra-vermelha'; }), false,
+    'a tarefa de remover a terra vermelha da serissa não está mais aberta');
 });
 
 assert.grupo('hoje.agruparChecklistPorPerfil — agrupa pelo perfil efetivo', function () {
@@ -150,6 +158,11 @@ function secaoAlertas(html) {
   var fim = html.indexOf('id="titulo-tarefas"');
   return html.slice(inicio, fim);
 }
+function secaoTarefas(html) {
+  var inicio = html.indexOf('id="titulo-tarefas"');
+  var fim = html.indexOf('id="titulo-checklist"');
+  return html.slice(inicio, fim);
+}
 function semNegacoesDeRegar(html) {
   return html.replace(/não\s+regue/gi, '');
 }
@@ -172,12 +185,17 @@ assert.grupo('hoje.render — invariantes contra o seed limpo (2026-09-05)', fun
   assert.ok(/sem registro de rega ainda/i.test(html), 'nenhuma árvore tem histórico de rega ainda');
   assert.ok(/Registrar evento/.test(html), 'existe o botão de registrar evento');
 
-  // As 7 tarefas do seed aparecem (pelo título).
-  ['Medir o tronco pela primeira vez', 'Transplantar para bacia',
-   'Remover a terra vermelha da superfície', 'Definir a fase',
+  // As tarefas ABERTAS do seed aparecem (pelo título). As duas já concluídas
+  // em 05/09/2026 (transplante da Primavera, terra vermelha da Serissa) não
+  // aparecem mais aqui — ver hoje.tarefasAbertas acima e seed.test.js.
+  ['Medir o tronco pela primeira vez', 'Definir a fase',
    'Preencher a data de aquisição', 'Registrar a chegada dos Ficus A/B/C'
   ].forEach(function (titulo) {
     assert.ok(html.indexOf(Bonsai.util.escapar(titulo)) >= 0, 'a tarefa "' + titulo + '" aparece na tela');
+  });
+  ['Transplantar para bacia', 'Remover a terra vermelha da superfície'].forEach(function (titulo) {
+    assert.eq(secaoTarefas(html).indexOf(Bonsai.util.escapar(titulo)) >= 0, false,
+      'a tarefa já concluída "' + titulo + '" não aparece mais em tarefas abertas');
   });
 
   // Nenhum valor null vaza como a palavra "null" na tela (Bonsai.util.escapar
@@ -256,6 +274,39 @@ assert.grupo('hoje.render — três bloqueios de adubo com título idêntico fic
     'o cartão da Serissa não menciona as outras duas árvores');
   assert.eq(azaleia.indexOf('Jabuticaba') >= 0 || azaleia.indexOf('Serissa') >= 0, false,
     'o cartão da Azaleia não menciona as outras duas árvores');
+});
+
+// ---------------------------------------------------------------------
+// Correção de dados reais (06/09/2026) — Serissa e Primavera ganharam casca
+// de pinus na superfície no transplante de 05/09/2026. O checklist precisa
+// mandar afastar a casca antes de testar, na linha de cada uma delas, e
+// nunca nas árvores sem cobertura informada.
+// ---------------------------------------------------------------------
+function linhaChecklist(html, arvoreId) {
+  var marcador = html.indexOf('data-arvore-id="' + arvoreId + '"');
+  if (marcador === -1) return null;
+  var abreLi = html.lastIndexOf('<li', marcador);
+  var fechaLi = html.indexOf('</li>', marcador);
+  if (abreLi === -1 || fechaLi === -1) return null;
+  return html.slice(abreLi, fechaLi);
+}
+
+assert.grupo('hoje.render — checklist avisa sobre cobertura de superfície (casca) quando existe', function () {
+  Bonsai.app.estado.db = Bonsai.dadosIniciais.montar();
+  Bonsai.app.estado.hoje = '2026-09-05';
+  var html = Bonsai.telas.hoje.render({});
+
+  ['serissa', 'primavera'].forEach(function (id) {
+    var linha = linhaChecklist(html, id);
+    assert.ok(linha, id + ': a linha do checklist aparece');
+    assert.ok(/afaste|abaixo|embaixo/i.test(linha || ''),
+      id + ': a linha do checklist manda afastar a casca antes de testar');
+  });
+
+  var linhaJab = linhaChecklist(html, 'jabuticaba');
+  assert.ok(linhaJab, 'jabuticaba: a linha do checklist aparece');
+  assert.eq(/afaste a casca|casca de pinus na superf[íi]cie/i.test(linhaJab || ''), false,
+    'jabuticaba: sem cobertura informada, o checklist não inventa aviso de casca');
 });
 
 assert.grupo('hoje.render — datas variadas não introduzem percentual nem "regue"', function () {

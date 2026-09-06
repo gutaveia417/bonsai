@@ -41,6 +41,12 @@ Bonsai.telas.arvores = (function () {
     observacao: 'Observação'
   };
 
+  var ROTULO_COBERTURA = {
+    casca: 'Casca de pinus',
+    musgo: 'Musgo',
+    nenhuma: 'Nenhuma'
+  };
+
   var ROTULO_BLOCO_REGRA = {
     permitido: '✅ Permitido',
     proibido: '⛔ Proibido',
@@ -387,12 +393,28 @@ Bonsai.telas.arvores = (function () {
 
     var substratoHtml = (arvore.substrato && arvore.substrato.length)
       ? '<ul class="substrato-lista">' + arvore.substrato.map(function (c) {
-          return '<li>' + Bonsai.util.escapar(c.componente) + ': ' + Bonsai.util.escapar(c.pct) + '%</li>';
+          // `estimado: true` marca um número que o dono deu como chute, não
+          // como medição — precisa continuar visualmente marcado como chute
+          // na tela, nunca virar percentual medido só porque mora no mesmo
+          // campo (CONTEXTO invariante 1; ver também js/dados-iniciais.js).
+          var sufixoEstimativa = c.estimado
+            ? ' <span class="substrato-estimativa">(estimativa do dono, por volume — não medido)</span>'
+            : '';
+          return '<li>' + Bonsai.util.escapar(c.componente) + ': ' + Bonsai.util.escapar(c.pct) + '%' +
+            sufixoEstimativa + '</li>';
         }).join('') + '</ul>'
       : '<p class="vazio">Substrato ainda não registrado.</p>';
 
     var solHorasTexto = typeof arvore.solHoras === 'number'
       ? arvore.solHoras + (arvore.solHoras === 1 ? ' hora de sol por dia' : ' horas de sol por dia')
+      : 'não informado';
+
+    // `null` é "não informado" (ninguém falou nisso para esta árvore);
+    // `'nenhuma'` seria a afirmação de que não há cobertura — spec 4.7.1.
+    // O aviso de checklist (js/rega.js, js/telas/hoje.js) é o que importa de
+    // verdade no dia a dia; aqui é só o registro na ficha.
+    var coberturaTexto = arvore.coberturaSuperficie
+      ? (ROTULO_COBERTURA[arvore.coberturaSuperficie] || arvore.coberturaSuperficie)
       : 'não informado';
 
     return '' +
@@ -403,6 +425,7 @@ Bonsai.telas.arvores = (function () {
         '<p><strong>Geotêxtil:</strong> ' + Bonsai.util.escapar(geotextilTexto) + '</p>' +
         '<p><strong>Substrato:</strong></p>' +
         substratoHtml +
+        '<p><strong>Cobertura da superfície:</strong> ' + Bonsai.util.escapar(coberturaTexto) + '</p>' +
         '<p><strong>Posição:</strong> ' + Bonsai.util.escapar(arvore.posicao || 'não informado') + '</p>' +
         '<p><strong>Sol:</strong> ' + solHorasTexto + '</p>' +
       '</section>';

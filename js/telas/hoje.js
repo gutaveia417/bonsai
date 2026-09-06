@@ -187,10 +187,19 @@ Bonsai.telas.hoje = (function () {
     var notaHtml = linha.perfil.nota
       ? '<p class="rega-nota-alerta" role="alert">⚠️ ' + Bonsai.util.escapar(linha.perfil.nota) + '</p>'
       : '';
+    // Cobertura de superfície (casca/musgo, ver js/rega.js) some visualmente
+    // o substrato e engana o teste do dedo — mesma prioridade visual da nota
+    // de risco acima, pelo mesmo motivo: é aqui, no checklist do dia, que a
+    // decisão errada (regar por causa da casca seca, com o substrato ainda
+    // úmido embaixo) seria tomada.
+    var coberturaHtml = linha.coberturaAviso
+      ? '<p class="rega-cobertura-alerta" role="alert">⚠️ ' + Bonsai.util.escapar(linha.coberturaAviso) + '</p>'
+      : '';
     return '' +
       '<li class="rega-linha" data-arvore-id="' + Bonsai.util.escapar(linha.arvore.id) + '">' +
         '<p class="rega-apelido">' + Bonsai.util.escapar(linha.arvore.apelido) + '</p>' +
         notaHtml +
+        coberturaHtml +
         '<p class="rega-ultima">' + textoUltimaRega(linha.diasDesde) + '</p>' +
         '<button type="button" class="botao-secundario" data-regar-arvore="' +
           Bonsai.util.escapar(linha.arvore.id) + '">Regada</button>' +

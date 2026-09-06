@@ -36,10 +36,15 @@ assert.grupo('arvores.proximoMarco — contra o seed real', function () {
 
   assert.eq(Bonsai.telas.arvores.proximoMarco(por('jabuticaba'), db),
     'Medir o tronco pela primeira vez', 'jabuticaba: a tarefa aberta dela é o marco');
+  // Correção de dados reais (06/09/2026): a Primavera já foi transplantada em
+  // 05/09/2026 — a tarefa nasce concluída (seed.test.js) e não conta mais
+  // como marco; sem gatilho de fase definido, sobra o aviso honesto.
   assert.eq(Bonsai.telas.arvores.proximoMarco(por('primavera'), db),
-    'Transplantar para bacia', 'primavera: a tarefa aberta dela é o marco');
+    'Sem marco definido ainda.', 'primavera: já transplantada, sem tarefa aberta nem gatilho — marco honesto');
+  // A Serissa também já teve a terra vermelha removida em 05/09/2026 — a
+  // próxima tarefa aberta dela passa a ser "Definir a fase".
   assert.eq(Bonsai.telas.arvores.proximoMarco(por('serissa'), db),
-    'Remover a terra vermelha da superfície', 'serissa: a primeira tarefa aberta dela é o marco');
+    'Definir a fase', 'serissa: terra vermelha já removida, a próxima tarefa aberta é definir a fase');
   assert.eq(Bonsai.telas.arvores.proximoMarco(por('azaleia'), db),
     'Definir a fase', 'azaleia: a primeira tarefa aberta dela é o marco');
   ['ficus-a', 'ficus-b', 'ficus-c'].forEach(function (id) {
@@ -227,6 +232,34 @@ assert.grupo('arvores.render ficha — Azaleia (2026-09-05, recuperação)', fun
   assert.ok(/fase ainda n[ãa]o definida/i.test(html), 'azaleia: fase null renderiza honesto, nunca inventado');
   assert.ok(/Não regue sem testar/.test(html), 'a nota do override de rega aparece verbatim na ficha');
   assert.ok(/recupera/i.test(html), 'o estado de recuperação aparece na ficha');
+});
+
+// ---------------------------------------------------------------------
+// Correção de dados reais (06/09/2026) — a ficha mostra a cobertura de
+// superfície (para registro) e marca visualmente o substrato que é
+// estimativa do dono, nunca deixando um chute passar por medição.
+// ---------------------------------------------------------------------
+assert.grupo('arvores.render ficha — cobertura de superfície e substrato estimado (06/09/2026)', function () {
+  Bonsai.app.estado.db = Bonsai.dadosIniciais.montar();
+  Bonsai.app.estado.hoje = '2026-09-05';
+
+  var htmlSerissa = Bonsai.telas.arvores.render({ id: 'serissa' });
+  var htmlPrimavera = Bonsai.telas.arvores.render({ id: 'primavera' });
+  var htmlJabuticaba = Bonsai.telas.arvores.render({ id: 'jabuticaba' });
+
+  [htmlSerissa, htmlPrimavera].forEach(function (html, i) {
+    var nome = i === 0 ? 'serissa' : 'primavera';
+    assert.ok(/casca de pinus/i.test(html), nome + ': a ficha mostra a cobertura de casca de pinus');
+    assert.ok(/estimativa/i.test(html), nome + ': o substrato marca a estimativa do dono');
+    assert.eq(/\bnull\b/.test(html), false, nome + ': sem a palavra "null" na tela');
+  });
+
+  // Jabuticaba: cobertura não informada renderiza honesto, nunca "null" cru,
+  // e o substrato dela (dado como fato, não estimativa) não ganha o selo.
+  assert.ok(/n[ãa]o informado/i.test(htmlJabuticaba), 'jabuticaba: cobertura não informada aparece como tal');
+  var secaoVasoJab = htmlJabuticaba.slice(htmlJabuticaba.indexOf('id="titulo-vaso"'));
+  assert.eq(/estimativa/i.test(secaoVasoJab), false,
+    'jabuticaba: substrato dado como fato não é marcado como estimativa');
 });
 
 assert.grupo('arvores.render ficha — árvore inexistente não lança', function () {

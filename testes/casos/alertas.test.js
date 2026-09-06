@@ -27,11 +27,22 @@ assert.grupo('alertas', function () {
   assert.eq(adubo[0].nivel, 'bloqueio', 'em carência o adubo é bloqueio, não lembrete');
   assert.ok(/03\/10\/2026/.test(adubo[0].corpo), 'diz a data de liberação');
 
-  // 4. janela de época: aparece em junho, não em maio
-  assert.eq(achar(Bonsai.alertas.gerar(db, '2026-05-15'), /janela-transplante/).length, 0,
+  // 4. janela de época: aparece em junho, não em maio.
+  //
+  // Correção de dados reais (06/09/2026): com a Primavera também em
+  // pós-transplante (transplante real de 05/09/2026), as QUATRO árvores
+  // ativas do seed ficaram em estado restritivo ao mesmo tempo — nenhuma
+  // libera "transplantar" hoje, então o seed cru não gera mais nenhum
+  // alerta de janela (fato novo, verificado abaixo, no bloco dedicado). Para
+  // continuar provando que o GERADOR soa em junho quando alguém está livre
+  // para transplantar, este teste usa uma cópia do seed com uma árvore
+  // devolvida a saudável.
+  var dbComArvoreSaudavel = Bonsai.dadosIniciais.montar();
+  dbComArvoreSaudavel.arvores.filter(function (a) { return a.id === 'serissa'; })[0].estado = 'saudavel';
+  assert.eq(achar(Bonsai.alertas.gerar(dbComArvoreSaudavel, '2026-05-15'), /janela-transplante/).length, 0,
     'em maio a janela ainda não é assunto');
-  assert.ok(achar(Bonsai.alertas.gerar(db, '2026-06-15'), /janela-transplante/).length > 0,
-    'em junho a janela de agosto já aparece');
+  assert.ok(achar(Bonsai.alertas.gerar(dbComArvoreSaudavel, '2026-06-15'), /janela-transplante/).length > 0,
+    'em junho a janela de agosto já aparece, para uma árvore sem estado restritivo');
 
   // 5. arame: conferência mensal
   db.eventos.push({ id: 'e2', arvoreId: 'ficus-b', data: '2026-06-01', tipo: 'aramacao',
@@ -59,6 +70,30 @@ assert.grupo('alertas', function () {
   // 8. todo alerta aponta para o guia
   Bonsai.alertas.gerar(db, '2026-09-05').forEach(function (a) {
     assert.ok(a.guiaAncora, 'alerta ' + a.id + ' aponta para o guia');
+  });
+});
+
+// Correção de dados reais (06/09/2026) — fato novo, não bug: com a Primavera
+// também em pós-transplante desde 05/09/2026, as quatro árvores ativas do
+// seed (Jabuticaba, Serissa, Azaleia, Primavera) estão TODAS em estado
+// restritivo ao mesmo tempo, e nenhuma libera "transplantar" agora. O
+// gerador de janela de época (R21) nunca anuncia a janela para uma árvore
+// que as regras já bloqueiam, então o seed cru não deveria gerar nenhum
+// alerta de janela hoje — em nenhum mês do ano, porque adaptação e
+// recuperação não expiram sozinhas, e pós-transplante só expira depois de
+// 03/10/2026, já fora da janela de aviso de agosto/setembro (junho a
+// setembro).
+assert.grupo('alertas - seed real de 06/09/2026: nenhuma árvore ativa libera janela de transplante', function () {
+  var DATAS_DO_ANO = [
+    '2026-01-15', '2026-06-15', '2026-07-15', '2026-08-15', '2026-09-05',
+    '2026-10-15', '2026-12-15', '2027-01-15'
+  ];
+  DATAS_DO_ANO.forEach(function (hoje) {
+    var db = Bonsai.dadosIniciais.montar();
+    var janelas = Bonsai.alertas.gerar(db, hoje).filter(function (a) { return /^janela-transplante-/.test(a.id); });
+    assert.eq(janelas.length, 0,
+      hoje + ': nenhuma árvore ativa do seed real está livre para transplantar agora (recebi: ' +
+      janelas.map(function (a) { return a.id; }).join(', ') + ')');
   });
 });
 

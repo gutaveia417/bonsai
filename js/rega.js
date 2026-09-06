@@ -95,6 +95,26 @@ Bonsai.rega = (function () {
     return Math.round(dias / (historico.length - 1));
   }
 
+  // ---------------------------------------------------------------------
+  // Cobertura de superfície (casca, musgo) — não faz parte da spec original;
+  // acrescentada porque duas árvores (Serissa e Primavera, transplante de
+  // 05/09/2026) ganharam casca de pinus espalhada por cima do substrato, por
+  // estética. O teste do dedo do checklist é a 2-3 cm no SUBSTRATO — uma
+  // cobertura por cima seca bem mais rápido que o substrato e engana quem
+  // testa só na cobertura, o mesmo erro nº 4 do guia que o app já evita para
+  // a superfície do substrato (ver CONTEXTO.md e as notas de js/rega.js
+  // acima). `null` e `'nenhuma'` nunca geram aviso — só material real por
+  // cima gera.
+  // ---------------------------------------------------------------------
+  var AVISO_COBERTURA = {
+    casca: 'Tem casca de pinus na superfície: afaste a casca e teste o substrato embaixo — a casca seca antes e engana.',
+    musgo: 'Tem musgo na superfície: afaste o musgo e teste o substrato embaixo — o musgo seca antes e engana.'
+  };
+
+  function avisoCobertura(coberturaSuperficie) {
+    return AVISO_COBERTURA[coberturaSuperficie] || null;
+  }
+
   // Modificador de estação — spec 5.3. Não é frequência fixa, só um
   // aviso de atenção redobrada nos meses de pico de calor e crescimento
   // em Naviraí (dez–fev). Nunca vira "regue duas vezes ao dia" como
@@ -122,7 +142,8 @@ Bonsai.rega = (function () {
           perfil: perfil,
           ultimaRega: ultimaRega,
           diasDesde: diasDesde,
-          avisoEstacao: aviso
+          avisoEstacao: aviso,
+          coberturaAviso: avisoCobertura(a.coberturaSuperficie)
         };
       });
   }
@@ -132,7 +153,8 @@ Bonsai.rega = (function () {
     perfilEfetivo: perfilEfetivo,
     registrar: registrar,
     intervaloMedioDias: intervaloMedioDias,
-    checklist: checklist
+    checklist: checklist,
+    avisoCobertura: avisoCobertura
   };
 
 })();

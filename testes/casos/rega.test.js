@@ -219,3 +219,34 @@ assert.grupo('rega — invariantes', function () {
     });
   })();
 });
+
+// ---------------------------------------------------------------------
+// Cobertura de superfície (casca/musgo) — correção de dados reais de
+// 06/09/2026: Serissa e Primavera ganharam casca de pinus por cima do
+// substrato no transplante de 05/09/2026. O teste do dedo do checklist é
+// sobre o SUBSTRATO; uma cobertura por cima seca antes e engana quem só
+// testa nela, então toda linha de árvore com cobertura real precisa carregar
+// a instrução de afastar a cobertura antes de testar.
+// ---------------------------------------------------------------------
+assert.grupo('rega.avisoCobertura e checklist — cobertura de superfície nunca é ignorada nem inventada', function () {
+  assert.eq(Bonsai.rega.avisoCobertura(null), null, 'sem cobertura informada: sem aviso');
+  assert.eq(Bonsai.rega.avisoCobertura('nenhuma'), null, 'cobertura explicitamente nenhuma: sem aviso');
+  assert.eq(Bonsai.rega.avisoCobertura('casca') !== null, true, 'casca: gera aviso');
+  assert.eq(Bonsai.rega.avisoCobertura('musgo') !== null, true, 'musgo: gera aviso');
+  assert.ok(/afaste|abaixo|embaixo/i.test(Bonsai.rega.avisoCobertura('casca')),
+    'o aviso de casca instrui a ir além da cobertura, não a testar nela');
+  assert.eq(/\bregue\b/i.test(Bonsai.rega.avisoCobertura('casca')), false,
+    'o aviso de cobertura nunca manda "regue" — só testar');
+
+  var db = Bonsai.dadosIniciais.montar();
+  db.arvores.forEach(function (a) { a.status = 'ativa'; }); // cobre também os 3 Ficus (coberturaSuperficie: null)
+  var lista = Bonsai.rega.checklist(db, '2026-09-05');
+  var por = function (id) { return lista.filter(function (l) { return l.arvore.id === id; })[0]; };
+
+  ['serissa', 'primavera'].forEach(function (id) {
+    assert.ok(por(id).coberturaAviso, id + ': tem casca na superfície, o checklist carrega o aviso');
+  });
+  ['jabuticaba', 'azaleia', 'ficus-a', 'ficus-b', 'ficus-c'].forEach(function (id) {
+    assert.eq(por(id).coberturaAviso, null, id + ': sem cobertura informada, sem aviso inventado');
+  });
+});

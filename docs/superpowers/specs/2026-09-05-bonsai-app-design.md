@@ -129,9 +129,10 @@ nasceria permanentemente não-gravável.
   estadoAte: '2026-10-03',          // null = indeterminado
 
   vaso: { descricao: 'bacia grande', furada: true, geotextil: '130 g/m²' },
-  substrato: [ { componente: 'terra vegetal', pct: 40 }, ... ],  // [] = desconhecido
+  substrato: [ { componente: 'terra vegetal', pct: 40, estimado: false }, ... ],  // [] = desconhecido
   posicao: 'sol da manhã até ~13h',
   solHoras: 6,
+  coberturaSuperficie: null,        // 'casca' | 'musgo' | 'nenhuma' | null — ver abaixo
 
   gatilhoFase: {
     tipo: 'diametro', alvoMm: 80, medidoACm: 5,
@@ -149,6 +150,26 @@ nasceria permanentemente não-gravável.
 `fase: null` é um estado legítimo e esperado, não um bug. Renderiza como
 **"fase ainda não definida"** com link para a tarefa aberta correspondente.
 
+`substrato[].estimado` marca um componente cujo percentual é chute do dono,
+por volume ou por olho — não uma medição. `true` faz a ficha mostrar o
+percentual com um selo de "estimativa, não medido"; `false` ou ausente é
+percentual dado como fato. Nunca inferir `true`/`false` de outro campo — só
+entra `true` quando o dono disser explicitamente que é chute (caso de
+referência: a mistura de 05/09/2026 da Serissa e da Primavera, que ele mesmo
+chamou de estimativa por volume).
+
+`coberturaSuperficie` (`'casca'` | `'musgo'` | `'nenhuma'` | `null`) registra
+um material diferente do substrato espalhado por cima dele (ex.: casca de
+pinus por estética). Existe porque o teste do dedo do checklist de rega
+(4.6/5.3) é sobre o **substrato**, e uma cobertura por cima seca bem mais
+rápido e engana quem testa só nela — o mesmo erro que a seção 9 já lista para
+a superfície do substrato, agora um nível acima. `null` é "não informado";
+`'nenhuma'` é a afirmação explícita de que não há cobertura — a mesma
+distinção de 4.7.1. Quando o campo é `'casca'` ou `'musgo'`, o checklist de
+rega (5.3) precisa mostrar uma instrução para afastar a cobertura e testar o
+substrato embaixo, na linha daquela árvore — é lá que a decisão errada
+(regar porque a cobertura secou) seria tomada, não só na ficha.
+
 ### 4.3 `eventos`
 
 ```js
@@ -158,6 +179,15 @@ nasceria permanentemente não-gravável.
 | tipo | `dados` |
 |---|---|
 | `transplante` | `{ vaso, substrato[], podaRaizFracao }` |
+
+`podaRaizFracao` é `null` sempre que não houver um número real de fração
+cortada — o que cobre dois casos distintos e ambos legítimos (4.7.1): nenhuma
+raiz foi cortada (fato) ou não se sabe se alguma raiz foi cortada
+(incerteza do próprio dono). **Nunca usar `0` para o primeiro caso** — `0`
+afirmaria "cortou zero", que é uma medição, não a ausência de uma. A
+certeza ou a incerteza sobre corte de raiz vai em `nota`, em palavras: "nenhuma
+raiz foi cortada" é diferente de "corte não confirmado", e os dois são
+diferentes de um campo em branco.
 | `poda` | `{ subtipo: 'radical'\|'estruturacao'\|'manutencao'\|'pincamento', fracaoRemovida }` |
 | `aramacao` | `{ ramos, bitolaMm }` |
 | `remocao-arame` | `{ ramos }` |
@@ -516,11 +546,30 @@ Mais os do Grupo B que não tiverem foto livre.
 
 Nenhuma outra espécie entra. Ver R10.
 
+**O que realmente aconteceu (correção de 06/09/2026):** no sábado 05/09/2026 o
+dono transplantou a Serissa e a Primavera para bacias, na mesma leva —
+substrato de 5 kg comercial + 5 kg de húmus + ~80% de um saco de ~1 kg de
+casca de pinus misturados, o resto da casca espalhado por cima, por estética.
+Nenhuma raiz foi cortada em nenhuma das duas, mas o distúrbio foi bem
+diferente: a Primavera teve o torrão quase todo desfeito e a raiz exposta
+(a mais mexida das três); a Serissa teve raiz mexida ao tirar a terra
+vermelha (do meio); a Jabuticaba, transplantada em 01/09/2026, teve só as
+bordas soltas com os dedos, núcleo intacto (a menos mexida). As seções abaixo
+já refletem esses fatos — ver `js/dados-iniciais.js` e `js/regras.js` para a
+correção de dados e de texto que isso obrigou (a regra de pós-transplante
+antes presumia raiz cortada; deixou de presumir).
+
 ### Jabuticaba (*Plinia cauliflora*)
 - fase `engorda` · estado `pos-transplante` desde 01/09/2026, até 03/10/2026
   (o fim do estado e a liberação do adubo são a mesma data, de propósito)
-- Transplantada 01/09/2026 → bacia grande furada, geotêxtil 130 g/m²
+- Transplantada 01/09/2026 → bacia grande furada, geotêxtil 130 g/m². Bordas do
+  torrão soltas com os dedos; o núcleo ficou intacto — a intenção era cortar
+  raiz circulante se encontrasse, mas o dono não tem certeza se chegou a
+  cortar. Registro: `podaRaizFracao: null`, nota "raiz mexida nas bordas,
+  corte não confirmado" — incerteza do próprio dono, não campo em branco
 - Substrato: 40% terra vegetal, 40% substrato, 20% casca de pinus
+- Cobertura de superfície: não informada (`coberturaSuperficie: null`) — o dono
+  nunca mencionou nenhuma para esta árvore
 - Posição: sol da manhã até ~13h (6 h)
 - Rega: `sempre-umido` — nunca deixar secar
 - Adubo: NPK 20-05-20 quinzenal, set–mar. **Liberado a partir de ~03/10/2026**
@@ -531,18 +580,43 @@ Nenhuma outra espécie entra. Ver R10.
 - ⛔ podar a copa
 
 ### Primavera (*Bougainvillea*)
-- fase `engorda` · estado `saudavel`
-- Transplante **pendente** (tarefa aberta), destino bacia
-- Substrato planejado: 20% húmus, 45% substrato, 35% casca de pinus
-- Sol pleno desde o primeiro dia
+- fase `engorda` · estado `pos-transplante` desde 05/09/2026, até 03/10/2026
+  (4 semanas de carência, não as 3–4 padrão do estado — escolha do dono por
+  causa do torrão quebrado, ver abaixo)
+- Transplantada para bacia em 05/09/2026, na mesma leva da Serissa. O torrão
+  se desfez quase por completo e as raízes ficaram expostas; **nenhuma raiz
+  foi cortada** — `podaRaizFracao: null` no evento, certeza registrada em
+  `nota`, não em `0`
+- Substrato: ~40% húmus, ~40% substrato comercial, ~20% casca de pinus —
+  **estimativa do dono, por volume, não medida** (`substrato[].estimado:
+  true` nos três componentes). Por peso daria ~46/46/7, mas casca é bem menos
+  densa, então a estimativa por volume é plausível — registrado como
+  estimativa dele, nunca como medição
+- Cobertura de superfície: `'casca'` — casca de pinus espalhada por cima do
+  substrato, por estética (~80% de um saco de ~1 kg foi misturado ao
+  substrato/húmus, o resto foi por cima)
+- Posição: **meia-sombra**, movida por causa do torrão quebrado — antes era
+  sol pleno desde o primeiro dia. A mudança e o motivo estão registrados;
+  nunca sobrescrever `posicao` em silêncio
 - Rega: `secar-entre-regas` — morre mais por excesso que por falta
-- Adubo: NPK 10-10-10
+- Adubo: NPK 10-10-10, bloqueado até 03/10/2026 pelo pós-transplante
 - Floração se induz por **estresse hídrico** (reduzir rega 2–3 semanas), não por adubo
 - Cuidado: espinhos nas axilas das folhas
 
 ### Serissa (*Serissa foetida* variegata)
-- fase **`null`** (tarefa aberta para definir) · estado `adaptacao`
-- Torrão original bom. Terra vermelha na superfície a remover → **tarefa aberta**
+- fase **`null`** (tarefa aberta para definir) · estado `adaptacao` desde
+  05/09/2026 (a troca de vaso reinicia a adaptação)
+- Transplantada para bacia em 05/09/2026, na mesma leva da Primavera. Terra
+  vermelha da superfície removida; havia terra vermelha também por baixo, ao
+  tirar do vaso. Raiz mexida nesse processo, mas **nenhuma raiz foi cortada**
+  nem o torrão foi quebrado — `podaRaizFracao: null` no evento, certeza
+  registrada em `nota`. Por isso é **provável** que reste terra vermelha
+  dentro do torrão — ninguém viu, é suspeita, não fato confirmado; se ela
+  secar mais devagar que as outras, essa é a explicação mais provável, e isso
+  **não é motivo** para regar as outras árvores com menos frequência
+- Substrato: mesma mistura estimada da Primavera (~40% húmus / ~40%
+  substrato comercial / ~20% casca de pinus, estimativa do dono por volume)
+- Cobertura de superfície: `'casca'` — mesma leva, mesma casca por estética
 - Meia-sombra, 2–5 h de sol da manhã
 - Rega: `nem-secar-nem-encharcar`
 - Adubo: NPK 10-10-10 em **meia dose**, quinzenal
@@ -578,17 +652,22 @@ Nenhuma outra espécie entra. Ver R10.
   - Qualquer diferença de tratamento entre os três **precisa** virar evento
 - Aramação em engorda aparece como ⚠️, não ⛔
 
-### Tarefas abertas no seed
+### Tarefas do seed
 
-| # | Árvore | Tarefa |
-|---|---|---|
-| 1 | Jabuticaba | Medir o tronco pela primeira vez — fita em volta a 5 cm do solo, dividir por 3,1416 |
-| 2 | Primavera | Transplantar para bacia (20% húmus / 45% substrato / 35% casca) |
-| 3 | Serissa | Remover a terra vermelha da superfície e substituir por substrato com casca |
-| 4 | Serissa | Definir a fase, depois da adaptação |
-| 5 | Azaleia | Definir a fase, depois que brotar |
-| 6 | Azaleia | Preencher a data de aquisição |
-| 7 | Ficus A/B/C | Registrar a chegada (status, data, substrato) |
+Sete tarefas nascem no seed; duas já nascem concluídas em 05/09/2026, porque o
+fato que elas descreviam já aconteceu antes do app existir (ver "o que
+realmente aconteceu" acima). Concluída não é removida — fica no registro com
+`concluidaEm` preenchido, e some da lista de "tarefas abertas" da tela Hoje.
+
+| # | Árvore | Tarefa | Status |
+|---|---|---|---|
+| 1 | Jabuticaba | Medir o tronco pela primeira vez — fita em volta a 5 cm do solo, dividir por 3,1416 | aberta |
+| 2 | Primavera | Transplantar para bacia | **concluída 05/09/2026** |
+| 3 | Serissa | Remover a terra vermelha da superfície e substituir por substrato com casca | **concluída 05/09/2026** |
+| 4 | Serissa | Definir a fase, depois da adaptação | aberta |
+| 5 | Azaleia | Definir a fase, depois que brotar | aberta |
+| 6 | Azaleia | Preencher a data de aquisição | aberta |
+| 7 | Ficus A/B/C | Registrar a chegada (status, data, substrato) | aberta |
 
 ---
 

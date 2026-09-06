@@ -239,6 +239,44 @@ assert.grupo('regras - regar, observar e medir nunca aparecem em proibido em tab
   });
 });
 
+// Correção de dados reais (06/09/2026) — nenhuma raiz foi cortada nos três
+// transplantes de 2026 (Jabuticaba, Serissa, Primavera; ver seed.test.js e
+// CONTEXTO.md invariante 1), e a Jabuticaba é explicitamente incerta sobre
+// isso. Nenhum texto de regra em lugar nenhum pode presumir corte de raiz —
+// a varredura cobre POR_FASE e POR_ESTADO inteiros, não só pos-transplante,
+// porque uma frase assim poderia vazar em qualquer fase futura também.
+assert.grupo('regras - nenhum texto de regra presume corte de raiz (correção 06/09/2026)', function () {
+  var PADRAO_CORTE = /raiz\s+(j[áa]\s+)?cortada|cortar?a?\s+de\s+novo|corte\s+anterior|reconstruir\s+raiz\s+cortad/i;
+
+  function varrer(tabela, nomeTabela) {
+    Object.keys(tabela).forEach(function (chave) {
+      ['permitido', 'proibido', 'atencao'].forEach(function (lista) {
+        (tabela[chave][lista] || []).forEach(function (item) {
+          assert.eq(PADRAO_CORTE.test(item.texto), false,
+            nomeTabela + '.' + chave + '.' + lista + '[' + item.acao + '].texto não presume corte de raiz');
+          assert.eq(PADRAO_CORTE.test(item.porque), false,
+            nomeTabela + '.' + chave + '.' + lista + '[' + item.acao + '].porque não presume corte de raiz');
+        });
+      });
+    });
+  }
+
+  varrer(Bonsai.regras.POR_FASE, 'POR_FASE');
+  varrer(Bonsai.regras.POR_ESTADO, 'POR_ESTADO');
+
+  // Caso concreto: pos-transplante continua explicando a carência, só que
+  // pela raiz ainda não ter se firmado no substrato novo, não por um corte.
+  var jt = Bonsai.regras.paraArvore(
+    Bonsai.dadosIniciais.montar().arvores.filter(function (a) { return a.id === 'jabuticaba'; })[0],
+    Bonsai.dadosIniciais.montar().especies.filter(function (e) { return e.id === 'jabuticaba'; })[0],
+    '2026-09-05'
+  );
+  var itemAdubo = jt.proibido.filter(function (i) { return i.acao === 'adubar'; })[0];
+  assert.ok(itemAdubo, 'pré-condição: jabuticaba tem adubo bloqueado em pós-transplante');
+  assert.ok(/firm|restabele/i.test(itemAdubo.porque),
+    'a explicação da carência fala em raiz se firmando, não em corte cicatrizando');
+});
+
 // fix round 2 — R19: em estado restritivo (adaptacao, recuperacao,
 // pos-transplante), uma permissão que vem só da fase (origem: 'fase') e que
 // o estado não re-autoriza explicitamente nunca fica ✅ por herança — ela

@@ -147,6 +147,9 @@ Bonsai.dadosIniciais = (function () {
         ],
         posicao: 'sol da manhã até ~13h',
         solHoras: 6,
+        // Nunca mencionada pelo dono para esta árvore — null, não 'nenhuma'
+        // (spec 4.7.1: 'nenhuma' afirmaria a ausência, que ninguém confirmou).
+        coberturaSuperficie: null,
 
         gatilhoFase: {
           tipo: 'diametro', alvoMm: 80, medidoACm: 5,
@@ -156,7 +159,10 @@ Bonsai.dadosIniciais = (function () {
 
         historicoRega: [],
         regaOverride: null,
-        notas: 'Tronco único com bifurcação em Y baixa.',
+        notas: 'Tronco único com bifurcação em Y baixa. Em 01/09/2026, bordas do ' +
+          'torrão soltas com os dedos; o núcleo do torrão ficou intacto. A intenção ' +
+          'era cortar raiz circulante se encontrasse, mas não há certeza se chegou a ' +
+          'cortar — raiz mexida nas bordas, corte não confirmado.',
         grupo: null
       },
       {
@@ -168,20 +174,36 @@ Bonsai.dadosIniciais = (function () {
 
         fase: 'engorda',
         faseDefinidaEm: '2026-09-05',
-        estado: 'saudavel',
+        estado: 'pos-transplante',
         estadoDesde: '2026-09-05',
-        estadoAte: null,
+        // Carência de 4 semanas, não as 3-4 do padrão do estado: escolha do
+        // dono depois do torrão quebrado (ver notas). 05/09 + 28 dias.
+        estadoAte: '2026-10-03',
 
-        vaso: { descricao: 'bacia (transplante pendente)', furada: null, geotextil: null },
-        substrato: [],
-        posicao: 'sol pleno',
+        vaso: { descricao: 'bacia', furada: null, geotextil: null },
+        substrato: [
+          { componente: 'húmus', pct: 40, estimado: true },
+          { componente: 'substrato comercial', pct: 40, estimado: true },
+          { componente: 'casca de pinus', pct: 20, estimado: true }
+        ],
+        // Movida para meia-sombra por causa do torrão quebrado — ver notas.
+        // Não é mais "sol pleno desde o primeiro dia" da espécie: overrida
+        // aqui, com o motivo registrado, nunca sobrescrita em silêncio.
+        posicao: 'meia-sombra (temporário, por causa do torrão quebrado)',
         solHoras: null,
+        coberturaSuperficie: 'casca',
 
         gatilhoFase: null,
 
         historicoRega: [],
         regaOverride: null,
-        notas: 'Transplante pendente para bacia. Substrato planejado: 20% húmus, 45% substrato comercial, 35% casca de pinus.',
+        notas: 'Transplantada para bacia em 05/09/2026, na mesma leva da Serissa. ' +
+          'O torrão se desfez quase por completo e as raízes ficaram expostas; ' +
+          'nenhuma raiz foi cortada. Substrato aproximado por estimativa do dono, ' +
+          'por volume (não medido): 40% húmus, 40% substrato comercial, 20% casca ' +
+          'de pinus. Casca de pinus foi espalhada na superfície do substrato, por ' +
+          'estética. Movida para meia-sombra por causa do torrão quebrado — estava ' +
+          'em sol pleno antes.',
         grupo: null
       },
       {
@@ -197,16 +219,31 @@ Bonsai.dadosIniciais = (function () {
         estadoDesde: '2026-09-05',
         estadoAte: null,
 
-        vaso: { descricao: 'torrão original', furada: null, geotextil: null },
-        substrato: [],
+        vaso: { descricao: 'bacia', furada: null, geotextil: null },
+        substrato: [
+          { componente: 'húmus', pct: 40, estimado: true },
+          { componente: 'substrato comercial', pct: 40, estimado: true },
+          { componente: 'casca de pinus', pct: 20, estimado: true }
+        ],
         posicao: 'meia-sombra, 2–5 h de sol da manhã',
         solHoras: null,
+        coberturaSuperficie: 'casca',
 
         gatilhoFase: null,
 
         historicoRega: [],
         regaOverride: null,
-        notas: 'Torrão original bom. Terra vermelha na superfície a remover — tarefa aberta.',
+        notas: 'Transplantada para bacia em 05/09/2026, na mesma leva da Primavera. ' +
+          'Terra vermelha da superfície foi removida; havia terra vermelha também por ' +
+          'baixo, ao tirar do vaso. Raiz foi mexida nesse processo, mas não foi ' +
+          'cortada nem o torrão foi quebrado — por isso é provável que ainda reste ' +
+          'terra vermelha dentro do torrão. Ninguém viu isso; é suspeita, não fato ' +
+          'confirmado. Se ela demorar mais para secar que as outras árvores, essa ' +
+          'terra vermelha remanescente é a explicação mais provável — isso não é ' +
+          'motivo para regar as outras árvores com menos frequência. Substrato ' +
+          'aproximado por estimativa do dono, por volume (não medido): 40% húmus, ' +
+          '40% substrato comercial, 20% casca de pinus. Casca de pinus foi espalhada ' +
+          'na superfície do substrato, por estética.',
         grupo: null
       },
       {
@@ -226,6 +263,7 @@ Bonsai.dadosIniciais = (function () {
         substrato: [],
         posicao: 'sombra',
         solHoras: null,
+        coberturaSuperficie: null,
 
         gatilhoFase: null,
 
@@ -255,6 +293,7 @@ Bonsai.dadosIniciais = (function () {
         substrato: [],
         posicao: 'sol pleno',
         solHoras: null,
+        coberturaSuperficie: null,
 
         gatilhoFase: null,
 
@@ -284,6 +323,7 @@ Bonsai.dadosIniciais = (function () {
         substrato: [],
         posicao: 'sol pleno',
         solHoras: null,
+        coberturaSuperficie: null,
 
         gatilhoFase: null,
 
@@ -313,6 +353,7 @@ Bonsai.dadosIniciais = (function () {
         substrato: [],
         posicao: 'sol pleno',
         solHoras: null,
+        coberturaSuperficie: null,
 
         gatilhoFase: null,
 
@@ -327,7 +368,68 @@ Bonsai.dadosIniciais = (function () {
       }
     ],
 
-    eventos: [],
+    // Três transplantes reais de 2026 (relato do dono, ver CONTEXTO.md
+    // invariante 1). Nenhuma raiz foi cortada nas três — `podaRaizFracao` é
+    // `null` nas três, nunca `0`: `0` afirmaria "cortou zero", e para a
+    // Jabuticaba isso é exatamente o que ele não sabe dizer. A certeza (ou a
+    // falta dela) de cada árvore vive em `nota`, em palavras, não no número.
+    eventos: [
+      {
+        id: 'evento-jabuticaba-transplante-2026-09-01',
+        arvoreId: 'jabuticaba',
+        data: '2026-09-01',
+        tipo: 'transplante',
+        nota: 'Bordas do torrão soltas com os dedos; o núcleo do torrão ficou ' +
+          'intacto. A intenção era cortar raiz circulante se encontrasse, mas não ' +
+          'há certeza se chegou a cortar — raiz mexida nas bordas, corte não confirmado.',
+        dados: {
+          vaso: { descricao: 'bacia grande', furada: true, geotextil: '130 g/m²' },
+          substrato: [
+            { componente: 'terra vegetal', pct: 40 },
+            { componente: 'substrato comercial', pct: 40 },
+            { componente: 'casca de pinus', pct: 20 }
+          ],
+          podaRaizFracao: null
+        },
+        fotoId: null
+      },
+      {
+        id: 'evento-serissa-transplante-2026-09-05',
+        arvoreId: 'serissa',
+        data: '2026-09-05',
+        tipo: 'transplante',
+        nota: 'Raízes mexidas ao remover a terra vermelha da superfície e a que ' +
+          'havia por baixo, ao tirar do vaso; nenhuma raiz foi cortada.',
+        dados: {
+          vaso: { descricao: 'bacia', furada: null, geotextil: null },
+          substrato: [
+            { componente: 'húmus', pct: 40, estimado: true },
+            { componente: 'substrato comercial', pct: 40, estimado: true },
+            { componente: 'casca de pinus', pct: 20, estimado: true }
+          ],
+          podaRaizFracao: null
+        },
+        fotoId: null
+      },
+      {
+        id: 'evento-primavera-transplante-2026-09-05',
+        arvoreId: 'primavera',
+        data: '2026-09-05',
+        tipo: 'transplante',
+        nota: 'O torrão se desfez quase por completo e as raízes ficaram ' +
+          'expostas; nenhuma raiz foi cortada.',
+        dados: {
+          vaso: { descricao: 'bacia', furada: null, geotextil: null },
+          substrato: [
+            { componente: 'húmus', pct: 40, estimado: true },
+            { componente: 'substrato comercial', pct: 40, estimado: true },
+            { componente: 'casca de pinus', pct: 20, estimado: true }
+          ],
+          podaRaizFracao: null
+        },
+        fotoId: null
+      }
+    ],
 
     tarefas: [
       {
@@ -344,10 +446,11 @@ Bonsai.dadosIniciais = (function () {
         id: 'tarefa-primavera-transplante',
         arvoreId: 'primavera',
         titulo: 'Transplantar para bacia',
-        comoFazer: 'Substrato: 20% húmus, 45% substrato comercial, 35% casca de pinus.',
+        comoFazer: 'Feito em 05/09/2026. Substrato usado: ~40% húmus, ~40% substrato ' +
+          'comercial, ~20% casca de pinus (estimativa do dono, por volume, não medido).',
         origem: 'seed',
         criadaEm: '2026-09-05',
-        concluidaEm: null,
+        concluidaEm: '2026-09-05',
         eventoAoConcluir: 'transplante'
       },
       {
@@ -357,7 +460,7 @@ Bonsai.dadosIniciais = (function () {
         comoFazer: 'Retirar a camada de terra vermelha da superfície do torrão e substituir por substrato comercial com casca de pinus.',
         origem: 'seed',
         criadaEm: '2026-09-05',
-        concluidaEm: null,
+        concluidaEm: '2026-09-05',
         eventoAoConcluir: null
       },
       {

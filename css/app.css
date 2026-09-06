@@ -226,6 +226,20 @@ body { margin: 0; font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, s
   margin: 6px 0;
 }
 
+/* Aviso de cobertura de superfície (casca/musgo) no checklist — mesma
+   prioridade visual da nota de risco acima: é aqui que a decisão errada
+   (regar porque a casca está seca, com o substrato ainda úmido embaixo)
+   seria tomada. Ver js/rega.js. */
+.rega-cobertura-alerta {
+  background: #fdecea;
+  border: 2px solid #b00020;
+  color: #7a0016;
+  font-weight: 700;
+  border-radius: 4px;
+  padding: 8px;
+  margin: 6px 0;
+}
+
 .checklist-aviso-estacao {
   background: #eaf2fd;
   border: 1px solid #0d47a1;
@@ -504,6 +518,14 @@ body { margin: 0; font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, s
 .substrato-lista {
   margin: 4px 0 12px;
   padding-left: 20px;
+}
+
+/* Marca visualmente um número de substrato que é chute do dono, não
+   medição (ver js/dados-iniciais.js, js/telas/arvores.js) — nunca deixar
+   uma estimativa se passar por dado medido. */
+.substrato-estimativa {
+  font-style: italic;
+  color: #555;
 }
 
 .experimento-nota {

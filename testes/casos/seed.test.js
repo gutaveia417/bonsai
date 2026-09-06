@@ -40,9 +40,20 @@ assert.grupo('seed', function () {
     assert.eq(por(id).substrato.length, 0, id + ' sem substrato inventado');
   });
 
-  assert.eq(db.tarefas.length, 7, 'as 7 tarefas abertas do seed');
-  assert.eq(db.tarefas.filter(function (t) { return t.concluidaEm !== null; }).length, 0,
-    'nenhuma tarefa nasce concluída');
+  assert.eq(db.tarefas.length, 7, 'as 7 tarefas do seed');
+  // Duas tarefas descrevem fatos que já aconteceram antes do app existir
+  // (Primavera transplantada, Serissa com a terra vermelha removida, ambas
+  // em 05/09/2026) — nascem concluídas, nunca escondidas nem reabertas.
+  var concluidas = db.tarefas.filter(function (t) { return t.concluidaEm !== null; });
+  assert.eq(concluidas.map(function (t) { return t.id; }).sort(),
+    ['tarefa-primavera-transplante', 'tarefa-serissa-terra-vermelha'],
+    'exatamente as duas tarefas que já aconteceram nascem concluídas');
+  assert.eq(por('primavera') && db.tarefas.filter(function (t) { return t.id === 'tarefa-primavera-transplante'; })[0].concluidaEm,
+    '2026-09-05', 'transplante da primavera concluído em 05/09/2026');
+  assert.eq(db.tarefas.filter(function (t) { return t.id === 'tarefa-serissa-terra-vermelha'; })[0].concluidaEm,
+    '2026-09-05', 'remoção da terra vermelha da serissa concluída em 05/09/2026');
+  assert.eq(db.tarefas.filter(function (t) { return t.concluidaEm === null; }).length, 5,
+    'as outras 5 tarefas continuam abertas');
   assert.ok(db.tarefas.some(function (t) { return /3,1416|3\.1416/.test(t.comoFazer); }),
     'a tarefa de medir ensina o método da fita');
 
@@ -117,5 +128,69 @@ assert.grupo('seed - não informado é null, não é chute', function () {
   // janela nas 5 espécies, vinda de uma única constante nomeada no seed.
   db.especies.forEach(function (e) {
     assert.eq(e.janelaTransplante, [8, 9], e.id + ': janela de transplante de Naviraí (ago-set)');
+  });
+});
+
+// Correção de dados reais (06/09/2026): os três transplantes de fato (Serissa
+// e Primavera em 05/09, Jabuticaba em 01/09) viram evento, nenhum com raiz
+// cortada, e nenhum vira um "0" que afirmaria o que ninguém mediu.
+assert.grupo('seed - transplantes reais viram evento, nunca inventam corte de raiz', function () {
+  var db = Bonsai.dadosIniciais.montar();
+  var eventoDe = function (id) { return db.eventos.filter(function (e) { return e.arvoreId === id && e.tipo === 'transplante'; })[0]; };
+
+  var evJab = eventoDe('jabuticaba');
+  var evSer = eventoDe('serissa');
+  var evPri = eventoDe('primavera');
+
+  assert.ok(evJab, 'existe evento de transplante da jabuticaba');
+  assert.ok(evSer, 'existe evento de transplante da serissa');
+  assert.ok(evPri, 'existe evento de transplante da primavera');
+
+  assert.eq(evJab.data, '2026-09-01', 'jabuticaba transplantada em 01/09/2026');
+  assert.eq(evSer.data, '2026-09-05', 'serissa transplantada em 05/09/2026');
+  assert.eq(evPri.data, '2026-09-05', 'primavera transplantada em 05/09/2026');
+
+  [evJab, evSer, evPri].forEach(function (ev) {
+    assert.eq(ev.dados.podaRaizFracao, null,
+      ev.arvoreId + ': podaRaizFracao é null, nunca 0 (0 afirmaria "cortou zero")');
+  });
+
+  // A certeza (ou a falta dela) mora em nota, em palavras — nunca no número.
+  var PADRAO_NENHUMA_CORTADA = /nenhuma raiz (foi )?cortada/i;
+  assert.ok(PADRAO_NENHUMA_CORTADA.test(evSer.nota), 'serissa: nota afirma que nenhuma raiz foi cortada');
+  assert.ok(PADRAO_NENHUMA_CORTADA.test(evPri.nota), 'primavera: nota afirma que nenhuma raiz foi cortada');
+  assert.ok(/n[ãa]o confirmad/i.test(evJab.nota), 'jabuticaba: nota expõe a incerteza, não afirma nem nega o corte');
+  assert.eq(PADRAO_NENHUMA_CORTADA.test(evJab.nota), false,
+    'jabuticaba: a nota não pode afirmar que nenhuma raiz foi cortada — é incerteza, não fato');
+
+  // O substrato estimado por volume (05/09/2026) carrega o selo de estimativa
+  // nos três componentes; o da jabuticaba (dado como fato) não.
+  [evSer, evPri].forEach(function (ev) {
+    ev.dados.substrato.forEach(function (c) {
+      assert.eq(c.estimado, true, ev.arvoreId + ': componente "' + c.componente + '" do substrato de 05/09 é estimativa');
+    });
+  });
+  evJab.dados.substrato.forEach(function (c) {
+    assert.eq(!!c.estimado, false, 'jabuticaba: substrato do transplante de 01/09 não é marcado como estimativa');
+  });
+});
+
+// R13 (nova) — coberturaSuperficie existe nas sete árvores, com um valor
+// válido; só as duas do transplante de 05/09/2026 têm casca, e nenhuma outra
+// árvore ganha um valor chutado.
+assert.grupo('seed - coberturaSuperficie presente e honesta nas 7 árvores', function () {
+  var db = Bonsai.dadosIniciais.montar();
+  var VALIDOS = ['casca', 'musgo', 'nenhuma', null];
+
+  db.arvores.forEach(function (a) {
+    assert.ok(VALIDOS.indexOf(a.coberturaSuperficie) >= 0,
+      a.id + ': coberturaSuperficie é um valor válido (recebi ' + JSON.stringify(a.coberturaSuperficie) + ')');
+  });
+
+  var por = function (id) { return db.arvores.filter(function (a) { return a.id === id; })[0]; };
+  assert.eq(por('serissa').coberturaSuperficie, 'casca', 'serissa: casca de pinus na superfície');
+  assert.eq(por('primavera').coberturaSuperficie, 'casca', 'primavera: casca de pinus na superfície');
+  ['jabuticaba', 'azaleia', 'ficus-a', 'ficus-b', 'ficus-c'].forEach(function (id) {
+    assert.eq(por(id).coberturaSuperficie, null, id + ': cobertura nunca mencionada é null, não chutada');
   });
 });
