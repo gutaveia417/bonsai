@@ -26,3 +26,6 @@ desktop.ini
 
 # Workspace do subagent-driven-development (rascunho, nao versionado)
 .superpowers/
+
+# Rascunho das ferramentas de navegador
+.playwright-mcp/
